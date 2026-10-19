@@ -1,0 +1,37 @@
+:root {
+  --jc-fondo: #f4efea;
+  --jc-acento: #d98a7d;
+  --jc-acento-2: #8c9a7b;
+  --jc-texto: #2e2b5f;
+  --jc-texto-suave: #8b87a0;
+
+  --bs-body-bg: var(--jc-fondo);
+  --bs-body-color: #333333;
+  --bs-body-font-family: 'Poppins', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: var(--jc-texto);
+}
+
+.btn-principal {
+  background-color: var(--jc-acento);
+  border-color: var(--jc-acento);
+  color: #fff;
+}
+.btn-principal:hover {
+  background-color: #c4796c;
+  border-color: #c4796c;
+  color: #fff;
+}
+.btn-principal:active,
+.btn-principal:active:focus {
+  background-color: #a8584c;
+  border-color: #92473c;
+  color: #fff;
+}
+.btn-principal:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(46, 43, 95, 0.35);
+}
