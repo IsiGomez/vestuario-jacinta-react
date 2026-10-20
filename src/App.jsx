@@ -3,6 +3,7 @@ import PruebaProductos from './pages/pruebas/PruebaProductos'
 import PruebaProductosCard from './pages/pruebas/PruebaProductoCard' 
 import { obtenerProductos } from './data/productos'
 import PruebaUsuarios from './pages/pruebas/PruebaUsuarios'
+import PruebaValidaciones from './pages/pruebas/PruebaValidaciones'
 
 function App() {
   const productos = obtenerProductos()
@@ -18,6 +19,7 @@ function App() {
         <PruebaProductosCard producto={productoEjemplo} />
       )}
       <PruebaUsuarios />
+      <PruebaValidaciones />
     </div>
   )
 }
