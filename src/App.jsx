@@ -2,6 +2,7 @@ import PruebaRegiones from './pages/pruebas/PruebaRegiones'
 import PruebaProductos from './pages/pruebas/PruebaProductos' 
 import PruebaProductosCard from './pages/pruebas/PruebaProductoCard' 
 import { obtenerProductos } from './data/productos'
+import PruebaUsuarios from './pages/pruebas/PruebaUsuarios'
 
 function App() {
   const productos = obtenerProductos()
@@ -16,6 +17,7 @@ function App() {
       {productoEjemplo && (
         <PruebaProductosCard producto={productoEjemplo} />
       )}
+      <PruebaUsuarios />
     </div>
   )
 }
