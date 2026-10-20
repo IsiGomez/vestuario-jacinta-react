@@ -36,7 +36,7 @@ export const regiones = [
         "Algarrobo", "Cabildo", "Calle Larga", "Cartagena", "Casablanca", "Catemu", "Concón", "El Quisco", "El Tabo", "Hijuelas", "Isla de Pascua", 
         "Juan Fernández", "La Calera", "La Cruz", "La Ligua", "Limache", "Llay-Llay", "Los Andes", "Nogales", "Olmué", "Panquehue", "Papudo", "Petorca", 
         "Puchuncaví", "Putaendo", "Quillota", "Quilpué", "Quintero", "Rinconada", "San Antonio", "San Esteban", "San Felipe", "Santa María", "Santo Domingo", 
-        "Valparaíso", "Villa Alemana", "Viña del Mar"
+        "Valparaíso", "Villa Alemana", "Viña del Mar", "Zapallar"
     ]
   },
   {
@@ -76,7 +76,7 @@ export const regiones = [
     "region": "Bío Bío", 
     "comunas": [
         "Alto Biobío", "Antuco", "Arauco", "Cabrero", "Cañete", "Chiguayante", "Concepción", "Contulmo", "Coronel", "Curanilahue", "Florida", "Hualpén", "Hualqui", 
-        "Laja", "Lebu", "Los Ángeles", "Lota", "Mulchén", "Nacimiento", "Negrete", "Penco", "Quilaco", "Quilleco", "San Rosendo", "Santa Bárbara", "Santa Juana", 
+        "Laja", "Lebu", "Los Álamos", "Los Ángeles", "Lota", "Mulchén", "Nacimiento", "Negrete", "Penco", "Quilaco", "Quilleco", "San Pedro de la Paz", "San Rosendo", "Santa Bárbara", "Santa Juana", 
         "Talcahuano", "Tirúa", "Tomé", "Tucapel", "Yumbel"
     ]
   },
@@ -98,7 +98,7 @@ export const regiones = [
     "region": "Los Lagos", 
     "comunas": [
         "Ancud", "Calbuco", "Castro", "Chaitén", "Chonchi", "Cochamó", "Curaco de Vélez", "Dalcahue", "Fresia", "Frutillar", "Futaleufú", "Hualaihué", "Llanquihue", 
-        "Los Muermos", "Maullín", "Osorno", "Palena", "Puerto Montt", "Puerto Octay", "Puerto Varas", "Puqueldón", "Queilén", "Quellón", "Quemchi", "Quinchao", 
+        "Los Muermos", "Maullín", "Osorno", "Palena", "Puerto Montt", "Puerto Octay", "Puerto Varas", "Puqueldón", "Purranque", "Puyehue", "Queilén", "Quellón", "Quemchi", "Quinchao", 
         "Río Negro", "San Juan de la Costa", "San Pablo"
     ]
   },
@@ -111,7 +111,7 @@ export const regiones = [
   {
     "region": "Magallanes", 
     "comunas": [
-        "Antártica", "Laguna Blanca", "Natales", "Porvenir", "Primavera", "Punta Arenas", "Río Verde", "San Gregorio", "Timaukel", "Torres del Paine"
+        "Antártica", "Cabo de Hornos", "Laguna Blanca", "Natales", "Porvenir", "Primavera", "Punta Arenas", "Río Verde", "San Gregorio", "Timaukel", "Torres del Paine"
     ]
   }
 ]
@@ -120,5 +120,6 @@ export const regiones = [
 export const obtenerRegiones = () => regiones.map((r) => r.region)
 
 
-export const obtenerComunas = (nombreRegion) =>
-  regiones.find((r) => r.region === nombreRegion)?.comunas ?? []
+export const obtenerComunas = (nombreRegion) => [
+  ...(regiones.find((r) => r.region === nombreRegion)?.comunas ?? []),
+]
