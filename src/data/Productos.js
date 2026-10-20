@@ -1,4 +1,4 @@
-import { leer, guardar, siguienteId } from '../utils/storage'
+import { leer, guardar, siguienteId, persistir } from '../utils/storage'
 
 const CLAVE = 'jacinta_productos'
 
@@ -82,14 +82,6 @@ const productosIniciales = [
 ]
 
 
-function persistir(lista) {
-    if (!guardar(CLAVE, lista)) {
-        throw new Error('No se pudo guardar: el almacenamiento del navegador está lleno o no disponible')
-    }
-}
-
-
-
 export function obtenerProductos() {
     const guardados = leer(CLAVE, null)
     
@@ -117,7 +109,7 @@ export function crearProducto(datos) {
     const productos = obtenerProductos()
     const nuevo = { ...datos, id: siguienteId(productos) }
     
-    persistir([...productos, nuevo])
+    persistir(CLAVE, [...productos, nuevo])
     
     return nuevo
 }
@@ -133,7 +125,7 @@ export function actualizarProducto(id, cambios) {
     const copia = [...productos]
     
     copia[indice] = actualizado
-    persistir(copia)
+    persistir(CLAVE, copia)
     
     return actualizado
 }
@@ -145,7 +137,7 @@ export function eliminarProducto(id) {
   
   if (filtrados.length === productos.length) return false
   
-  persistir(filtrados)
+  persistir(CLAVE, filtrados)
   
   return true
 }
@@ -154,7 +146,7 @@ export function eliminarProducto(id) {
 export function restablecerProductos() {
     const iniciales = structuredClone(productosIniciales)
     
-    persistir(iniciales)
+    persistir(CLAVE, iniciales)
     
     return iniciales
 }

@@ -19,6 +19,11 @@ export function guardar(clave, valor) {
     }
 }
 
+export function persistir(clave, lista) {
+    if (!guardar(clave, lista)) {
+        throw new Error('No se pudo guardar: el almacenamiento del navegador está lleno o no disponible')
+    }
+}
 
 export const siguienteId = (lista) =>
   lista.reduce((max, item) => Math.max(max, item.id), 0) + 1

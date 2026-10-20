@@ -24,6 +24,7 @@ const vacio = (valor) => valor === undefined || valor === null || String(valor).
 const runValido = /^(?:(?:\d{1,2}\.\d{3}\.\d{3})|\d{6,8})-?[\dKk]$/
 const dominiosPermitidos = ['duoc.cl', 'profesor.duoc.cl', 'gmail.com']
 const correoPermitido = /^[^\s@]+@(duoc\.cl|profesor\.duoc\.cl|gmail\.com)$/
+export const normalizarCorreo = (c) => String(c ?? '').trim().toLowerCase()
 
 // RUN
 export const normalizarRun = (run) => String(run ?? '').replace(/[.\-\s]/g, '').toUpperCase()
@@ -94,7 +95,7 @@ export const validarDireccion = (valor) => validarTexto(valor, { campo: 'La dire
 export function validarCorreo(correo) {
     if (vacio(correo)) return 'El correo es obligatorio'
     
-    const texto = String(correo).trim().toLowerCase()
+    const texto = normalizarCorreo(correo)
     
     if (texto.length > LIMITES.maxCorreo) {
         return `El correo no puede superar los ${LIMITES.maxCorreo} caracteres`

@@ -43,8 +43,8 @@ function PruebaValidaciones() {
     const [tocados, setTocados] = useState({})
 
     const cambiar = (nombre, valor) => {
-        setValores({ ...valores, [nombre]: valor })
-        setTocados({ ...tocados, [nombre]: true })
+        setValores(prev => ({ ...prev, [nombre]: valor }))
+        setTocados(prev => ({ ...prev, [nombre]: true }))
     }
 
     const run = valores.run ?? ''
@@ -91,5 +91,4 @@ function PruebaValidaciones() {
         </section>
     )
 }
-
 export default PruebaValidaciones

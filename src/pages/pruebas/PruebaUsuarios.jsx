@@ -88,7 +88,7 @@ function PruebaUsuarios() {
                 <button className="btn btn-outline-secondary" onClick={() => ejecutar(restablecerUsuarios)}>
                     Restablecer
                 </button>
-            </div>3
+            </div>
             
             <ul className="list-group">
                 {usuarios.map((user) => (

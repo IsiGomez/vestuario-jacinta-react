@@ -1,8 +1,8 @@
 import { useId } from 'react'
-import { obtenerRegiones, obtenerComunas } from '../data/RegionComuna'
+import { obtenerRegiones, obtenerComunas } from '../data/regionComuna'
 
 
-function RegionComunaSelect({ region, comuna, onChange, disabled = false }) {
+function RegionComunaSelect({ region= '', comuna= '', onChange, disabled = false }) {
   const id = useId()
 
   const cambiarRegion = (e) => onChange({ region: e.target.value, comuna: '' })
