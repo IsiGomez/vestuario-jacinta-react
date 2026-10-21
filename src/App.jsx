@@ -1,19 +1,11 @@
-import PruebaRegiones from './pages/pruebas/PruebaRegiones'
-import PruebaProductos from './pages/pruebas/PruebaProductos' 
-import PruebaProductosCard from './pages/pruebas/PruebaProductoCard' 
-import { obtenerProductos } from './data/productos'
-import PruebaUsuarios from './pages/pruebas/PruebaUsuarios'
-import PruebaValidaciones from './pages/pruebas/PruebaValidaciones'
-import { AuthProvider } from './context/AuthProvider' // Ajusta la ruta
-import PruebaAuth from './pages/pruebas/PruebaAuth'
+import { AuthProvider } from './context/AuthProvider'
+import { router } from './routes/Router'
+import { RouterProvider } from 'react-router-dom'
 
-function App() {
-  const productos = obtenerProductos()
-  const productoEjemplo = productos[0]
-  
+function App() {  
   return (
     <AuthProvider>
-      <PruebaAuth />
+      <RouterProvider router={router} />
     </AuthProvider>
   )
 }

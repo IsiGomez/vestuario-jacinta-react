@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { AuthContext } from './AuthContext'
+import { AuthContext } from './authContext'
 import { autenticar, obtenerUsuarioPorId } from '../data/usuarios'
 import { leer, guardar } from '../utils/storage'
 
