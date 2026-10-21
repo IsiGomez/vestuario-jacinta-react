@@ -1,12 +1,25 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { obtenerProductos } from '../../data/productos'
+import { obtenerProductos,  eliminarProducto} from '../../data/productos'
 
 const formatearPrecio = (valor) =>
     new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(valor)
 
 function ProductosAdmin() {
-    const [productos] = useState(obtenerProductos)
+    const [productos, setProductos] = useState(obtenerProductos)
+    const [error, setError] = useState('')
+
+    const eliminar = (producto) => {
+        if (!window.confirm(`¿Eliminar "${producto.nombre}"? Esta acción no se puede deshacer.`)) return
+
+        try {
+            eliminarProducto(producto.id)
+            setProductos(obtenerProductos())
+            setError('')
+        } catch (e) {
+            setError(e.message)
+        }
+    }
 
     return (
         <div class = "p-3">
@@ -16,6 +29,8 @@ function ProductosAdmin() {
                     <i className="bi bi-plus-lg me-1" /> Nuevo producto
                 </Link>
             </div>
+
+            {error && <div className="alert alert-danger">{error}</div>}
 
             <div className="table-responsive">
                 <table className="table table-hover align-middle">
@@ -48,9 +63,24 @@ function ProductosAdmin() {
                                     >
                                         Editar
                                     </Link>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-danger btn-sm"
+                                        onClick={() => eliminar(p)}
+                                    >
+                                        Eliminar
+                                    </button>
                                 </td>
                             </tr>
                         ))}
+
+                        {productos.length === 0 && (
+                            <tr>
+                                <td colSpan={6} className="text-center text-muted py-4">
+                                    No hay productos registrados.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
