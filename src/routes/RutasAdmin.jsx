@@ -1,5 +1,6 @@
 import PaginaPendiente from '../components/PaginaPendiente'
 import ProductosAdmin from '../pages/admin/ProductosAdmin'
+import ProductoFormulario from '../pages/admin/ProductoFormulario'
 
 const rutasAdmin = [
     { 
@@ -19,9 +20,9 @@ const rutasAdmin = [
         path: 'productos',
         element: <ProductosAdmin />
     },
-    { 
-        path: 'productos/nuevo', 
-        element: <PaginaPendiente titulo="Nuevo producto" /> 
+    {
+        path: 'productos/nuevo',
+        element: <ProductoFormulario />
     },
     { 
         path: 'productos/:id/editar', 
