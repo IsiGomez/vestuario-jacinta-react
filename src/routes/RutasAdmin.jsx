@@ -2,6 +2,7 @@ import PaginaPendiente from '../components/PaginaPendiente'
 import ProductosAdmin from '../pages/admin/ProductosAdmin'
 import ProductoFormulario from '../pages/admin/ProductoFormulario'
 import ProductosCriticos from '../pages/admin/ProductosCriticos'
+import UsuariosAdmin from '../pages/admin/UsuariosAdmin'
 
 const rutasAdmin = [
     { 
@@ -53,7 +54,7 @@ const rutasAdmin = [
 
     { 
         path: 'usuarios', 
-        element: <PaginaPendiente titulo="Usuarios" /> 
+        element: <UsuariosAdmin /> 
     },
     { 
         path: 'usuarios/nuevo', 
