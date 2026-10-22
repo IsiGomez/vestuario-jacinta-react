@@ -64,7 +64,7 @@ function ProductosAdmin() {
                                     <td>{p.nombre}</td>
                                     <td className = "text-capitalize">{p.genero}</td>
                                     <td>{formatearPrecio(p.precio)}</td>
-                                    <td class="text-center">
+                                    <td className="text-center">
                                         <span className={`badge ${p.stock <= p.stockCritico ? 'bg-danger' : 'bg-success'}`}>
                                             {p.stock}
                                         </span>

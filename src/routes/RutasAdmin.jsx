@@ -3,6 +3,7 @@ import ProductosAdmin from '../pages/admin/ProductosAdmin'
 import ProductoFormulario from '../pages/admin/ProductoFormulario'
 import ProductosCriticos from '../pages/admin/ProductosCriticos'
 import UsuariosAdmin from '../pages/admin/UsuariosAdmin'
+import UsuarioFormulario from '../pages/admin/UsuarioFormulario'
 
 const rutasAdmin = [
     { 
@@ -58,11 +59,11 @@ const rutasAdmin = [
     },
     { 
         path: 'usuarios/nuevo', 
-        element: <PaginaPendiente titulo="Nuevo usuario" /> 
+        element: <UsuarioFormulario /> 
     },
     { 
         path: 'usuarios/:id/editar', 
-        element: <PaginaPendiente titulo="Editar usuario" /> 
+        element: <UsuarioFormulario /> 
     },
     { 
         path: 'usuarios/:id/historial', 
