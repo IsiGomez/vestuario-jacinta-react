@@ -12,3 +12,6 @@ export function formatearRun(run) {
 
     return `${cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}-${dv}`
 }
+
+export const formatearFecha = (fecha) =>
+    new Intl.DateTimeFormat('es-CL', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(fecha))

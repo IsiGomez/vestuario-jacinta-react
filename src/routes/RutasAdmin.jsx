@@ -7,6 +7,7 @@ import UsuarioFormulario from '../pages/admin/UsuarioFormulario'
 import Perfil from '../pages/admin/Perfil'
 import CategoriasAdmin from '../pages/admin/CategoriasAdmin'
 import CategoriaFormulario from '../pages/admin/CategoriaFormulario'
+import OrdenesAdmin from '../pages/admin/OrdenesAdmin'
 
 const rutasAdmin = [
     { 
@@ -16,7 +17,7 @@ const rutasAdmin = [
 
     { 
         path: 'ordenes', 
-        element: <PaginaPendiente titulo="Órdenes / Boletas" /> 
+        element: <OrdenesAdmin /> 
     },
     { 
         path: 'ordenes/:id', 
