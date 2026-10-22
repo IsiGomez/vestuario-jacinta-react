@@ -8,6 +8,7 @@ import Perfil from '../pages/admin/Perfil'
 import CategoriasAdmin from '../pages/admin/CategoriasAdmin'
 import CategoriaFormulario from '../pages/admin/CategoriaFormulario'
 import OrdenesAdmin from '../pages/admin/OrdenesAdmin'
+import BoletaAdmin from '../pages/admin/BoletaAdmin'
 
 const rutasAdmin = [
     { 
@@ -21,7 +22,7 @@ const rutasAdmin = [
     },
     { 
         path: 'ordenes/:id', 
-        element: <PaginaPendiente titulo="Mostrar boleta" /> 
+        element: <BoletaAdmin /> 
     },
     {
         path: 'productos',
