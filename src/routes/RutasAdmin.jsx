@@ -2,6 +2,9 @@ import PaginaPendiente from '../components/PaginaPendiente'
 import ProductosAdmin from '../pages/admin/ProductosAdmin'
 import ProductoFormulario from '../pages/admin/ProductoFormulario'
 import ProductosCriticos from '../pages/admin/ProductosCriticos'
+import UsuariosAdmin from '../pages/admin/UsuariosAdmin'
+import UsuarioFormulario from '../pages/admin/UsuarioFormulario'
+import Perfil from '../pages/admin/Perfil'
 
 const rutasAdmin = [
     { 
@@ -53,15 +56,15 @@ const rutasAdmin = [
 
     { 
         path: 'usuarios', 
-        element: <PaginaPendiente titulo="Usuarios" /> 
+        element: <UsuariosAdmin /> 
     },
     { 
         path: 'usuarios/nuevo', 
-        element: <PaginaPendiente titulo="Nuevo usuario" /> 
+        element: <UsuarioFormulario /> 
     },
     { 
         path: 'usuarios/:id/editar', 
-        element: <PaginaPendiente titulo="Editar usuario" /> 
+        element: <UsuarioFormulario /> 
     },
     { 
         path: 'usuarios/:id/historial', 
@@ -74,7 +77,7 @@ const rutasAdmin = [
     },
     { 
         path: 'perfil', 
-        element: <PaginaPendiente titulo="Perfil" /> 
+        element: <Perfil /> 
     },
 ]
 

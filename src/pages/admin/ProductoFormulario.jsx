@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { validarTexto, validarPrecio, validarEnteroNoNegativo, validarRequerido } from '../../utils/validaciones'
 import { crearProducto, obtenerProductos, color, TIPOS, COLORES, COLORES_CON_FOTOS, TALLAS, actualizarProducto, obtenerProductoPorId } from '../../data/productos'
-
+import Campo from '../../components/Campo'
 
 const VALORES_INICIALES = {
     nombre: '',
@@ -44,29 +44,6 @@ function validar(datos, idActual = null) {
     }
 
     return Object.fromEntries(Object.entries(errores).filter(([, mensaje]) => mensaje))
-}
-
-
-function Campo({ etiqueta, nombre, valor, error, onChange, as: Control = 'input', children, ...resto }) {
-    const clase = Control === 'select' ? 'form-select' : 'form-control'
-
-    return (
-        <div className="mb-3">
-            <label htmlFor={nombre} className="form-label">{etiqueta}</label>
-            <Control
-                id={nombre}
-                name={nombre}
-                value={valor}
-                onChange={onChange}
-                className={`${clase} ${error ? 'is-invalid' : ''}`}
-                {...resto}
-            >
-                {children}
-            </Control>
-            
-            {error && <div className="invalid-feedback">{error}</div>}
-        </div>
-    )
 }
 
 

@@ -58,7 +58,7 @@ function ProductosCriticos() {
                                         <td className="text-center">
                                             <Link
                                                 to={`/admin/productos/${p.id}/editar`}
-                                                className="btn btn-outline-secondary btn-sm"
+                                                className="btn btn-outline-secondary btn-sm w-100"
                                             >
                                                 Editar stock
                                             </Link>

@@ -64,25 +64,28 @@ function ProductosAdmin() {
                                     <td>{p.nombre}</td>
                                     <td className = "text-capitalize">{p.genero}</td>
                                     <td>{formatearPrecio(p.precio)}</td>
-                                    <td class="text-center">
+                                    <td className="text-center">
                                         <span className={`badge ${p.stock <= p.stockCritico ? 'bg-danger' : 'bg-success'}`}>
                                             {p.stock}
                                         </span>
                                     </td>
-                                    <td className="text-center">
-                                        <Link
-                                            to={`/admin/productos/${p.id}/editar`}
-                                            className="btn btn-outline-secondary btn-sm me-2"
-                                        >
-                                            Editar
-                                        </Link>
-                                        <button
-                                            type="button"
-                                            className="btn btn-outline-danger btn-sm"
-                                            onClick={() => eliminar(p)}
-                                        >
-                                            Eliminar
-                                        </button>
+
+                                    <td className="text-center text-nowrap">
+                                        <div className="d-flex gap-2 w-100">
+                                            <Link
+                                                to={`/admin/productos/${p.id}/editar`}
+                                                className="btn btn-outline-secondary btn-sm flex-fill"
+                                            >
+                                                Editar
+                                            </Link>
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-danger btn-sm flex-fill"
+                                                onClick={() => eliminar(p)}
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             )
