@@ -1,4 +1,7 @@
 import PaginaPendiente from '../components/PaginaPendiente'
+import ProductosAdmin from '../pages/admin/ProductosAdmin'
+import ProductoFormulario from '../pages/admin/ProductoFormulario'
+import ProductosCriticos from '../pages/admin/ProductosCriticos'
 
 const rutasAdmin = [
     { 
@@ -14,22 +17,21 @@ const rutasAdmin = [
         path: 'ordenes/:id', 
         element: <PaginaPendiente titulo="Mostrar boleta" /> 
     },
-
-    { 
-        path: 'productos', 
-        element: <PaginaPendiente titulo="Productos" /> 
+    {
+        path: 'productos',
+        element: <ProductosAdmin />
     },
-    { 
-        path: 'productos/nuevo', 
-        element: <PaginaPendiente titulo="Nuevo producto" /> 
+    {
+        path: 'productos/nuevo',
+        element: <ProductoFormulario />
     },
     { 
         path: 'productos/:id/editar', 
-        element: <PaginaPendiente titulo="Editar producto" /> 
+        element: <ProductoFormulario /> 
     },
     { 
         path: 'productos/criticos', 
-        element: <PaginaPendiente titulo="Listado de productos críticos" /> 
+        element: <ProductosCriticos /> 
     },
     { 
         path: 'productos/reportes', 
