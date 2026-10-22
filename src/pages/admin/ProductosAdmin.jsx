@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { obtenerProductos,  eliminarProducto} from '../../data/productos'
 import MiniaturaImagen from '../../components/MiniaturaImagen';
+import {formatearPrecio} from '../../utils/formato'
 
-const formatearPrecio = (valor) =>
-    new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(valor)
 
 function ProductosAdmin() {
     const [productos, setProductos] = useState(obtenerProductos)
@@ -23,13 +22,18 @@ function ProductosAdmin() {
     }
 
     return (
-        <div class = "p-3">
+        <div className = "p-3">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h1 className="h3 mb-0">Productos</h1>
                 
-                <Link to="/admin/productos/nuevo" className="btn btn-primary btn-sm">
-                    <i className="bi bi-plus-lg me-1" /> Nuevo producto
-                </Link>
+                <div className="d-flex gap-2">
+                    <Link to="/admin/productos/criticos" className="btn btn-outline-danger btn-sm">
+                        <i className="bi bi-exclamation-triangle me-1" /> Críticos
+                    </Link>
+                    <Link to="/admin/productos/nuevo" className="btn btn-primary btn-sm">
+                        <i className="bi bi-plus-lg me-1" /> Nuevo producto
+                    </Link>
+                </div>
             </div>
 
             {error && <div className="alert alert-danger">{error}</div>}
@@ -39,11 +43,11 @@ function ProductosAdmin() {
                     <thead>
                         <tr>
                             <th>Imagen</th>
-                            <th class = "text-center">ID</th>
+                            <th className = "text-center">ID</th>
                             <th>Nombre</th>
                             <th>Género</th>
                             <th>Precio</th>
-                            <th class = "text-center">Stock</th>
+                            <th className = "text-center">Stock</th>
                             <th className = "text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -56,7 +60,7 @@ function ProductosAdmin() {
                                     <td>
                                         <MiniaturaImagen src={primeraImagen} alt={p.nombre} />
                                     </td>
-                                    <td class = "text-center">{p.id}</td>
+                                    <td className = "text-center">{p.id}</td>
                                     <td>{p.nombre}</td>
                                     <td className = "text-capitalize">{p.genero}</td>
                                     <td>{formatearPrecio(p.precio)}</td>

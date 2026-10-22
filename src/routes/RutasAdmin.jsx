@@ -1,6 +1,7 @@
 import PaginaPendiente from '../components/PaginaPendiente'
 import ProductosAdmin from '../pages/admin/ProductosAdmin'
 import ProductoFormulario from '../pages/admin/ProductoFormulario'
+import ProductosCriticos from '../pages/admin/ProductosCriticos'
 
 const rutasAdmin = [
     { 
@@ -30,7 +31,7 @@ const rutasAdmin = [
     },
     { 
         path: 'productos/criticos', 
-        element: <PaginaPendiente titulo="Listado de productos críticos" /> 
+        element: <ProductosCriticos /> 
     },
     { 
         path: 'productos/reportes', 
