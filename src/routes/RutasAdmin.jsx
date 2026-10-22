@@ -6,6 +6,7 @@ import UsuariosAdmin from '../pages/admin/UsuariosAdmin'
 import UsuarioFormulario from '../pages/admin/UsuarioFormulario'
 import Perfil from '../pages/admin/Perfil'
 import CategoriasAdmin from '../pages/admin/CategoriasAdmin'
+import CategoriaFormulario from '../pages/admin/CategoriaFormulario'
 
 const rutasAdmin = [
     { 
@@ -48,11 +49,11 @@ const rutasAdmin = [
     },
     { 
         path: 'categorias/nueva', 
-        element: <PaginaPendiente titulo="Nueva categoría" /> 
+        element: <CategoriaFormulario /> 
     },
     { 
         path: 'categorias/:id/editar', 
-        element: <PaginaPendiente titulo="Editar categoría" /> 
+        element: <CategoriaFormulario /> 
     },
 
     { 
