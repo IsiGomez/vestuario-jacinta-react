@@ -4,6 +4,7 @@ import ProductoFormulario from '../pages/admin/ProductoFormulario'
 import ProductosCriticos from '../pages/admin/ProductosCriticos'
 import UsuariosAdmin from '../pages/admin/UsuariosAdmin'
 import UsuarioFormulario from '../pages/admin/UsuarioFormulario'
+import Perfil from '../pages/admin/Perfil'
 
 const rutasAdmin = [
     { 
@@ -76,7 +77,7 @@ const rutasAdmin = [
     },
     { 
         path: 'perfil', 
-        element: <PaginaPendiente titulo="Perfil" /> 
+        element: <Perfil /> 
     },
 ]
 
