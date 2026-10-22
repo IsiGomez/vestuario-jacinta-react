@@ -26,7 +26,7 @@ const rutasAdmin = [
     },
     { 
         path: 'productos/:id/editar', 
-        element: <PaginaPendiente titulo="Editar producto" /> 
+        element: <ProductoFormulario /> 
     },
     { 
         path: 'productos/criticos', 

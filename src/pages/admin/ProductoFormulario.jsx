@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { validarTexto, validarPrecio, validarEnteroNoNegativo, validarRequerido } from '../../utils/validaciones'
-import { crearProducto, obtenerProductos, color, TIPOS, COLORES, COLORES_CON_FOTOS, TALLAS } from '../../data/productos'
+import { crearProducto, obtenerProductos, color, TIPOS, COLORES, COLORES_CON_FOTOS, TALLAS, actualizarProducto, obtenerProductoPorId } from '../../data/productos'
 
 
 const VALORES_INICIALES = {
@@ -15,12 +15,25 @@ const VALORES_INICIALES = {
     colores: [],
 }
 
-function validar(datos) {
+
+const productoAFormulario = (p) => ({
+    nombre: p.nombre,
+    genero: p.genero,
+    tipo: p.tipo,
+    precio: String(p.precio),
+    stock: String(p.stock),
+    stockCritico: String(p.stockCritico),
+    descripcion: p.descripcion,
+    colores: p.colores ? p.colores.map((c) => c.clave) : [],
+})
+
+
+function validar(datos, idActual = null) {
     const errores = {
         nombre: validarTexto(datos.nombre, { campo: 'El nombre', min: 3, max: 80 }),
         genero: validarRequerido(datos.genero, 'El género'),
         tipo: validarRequerido(datos.tipo, 'El tipo') ||
-            (obtenerProductos().some((p) => p.genero === datos.genero && p.tipo === datos.tipo)
+            (obtenerProductos().some((p) => p.genero === datos.genero && p.tipo === datos.tipo & p.id !== Number(idActual))
             ? 'Ya existe un producto de este género y tipo. Edítalo para cambiar sus colores.'
             : null),
         colores: datos.colores.length === 0 ? 'Elige al menos un color' : null,
@@ -59,9 +72,25 @@ function Campo({ etiqueta, nombre, valor, error, onChange, as: Control = 'input'
 
 function ProductoFormulario() {
     const navegar = useNavigate()
-    const [datos, setDatos] = useState(VALORES_INICIALES)
+
+    const { id } = useParams()
+    const esEdicion = id !== undefined
+    const producto = esEdicion ? obtenerProductoPorId(id) : null
+
+    const [datos, setDatos] = useState(producto ? productoAFormulario(producto) : VALORES_INICIALES)
     const [errores, setErrores] = useState({})
     const [errorGuardado, setErrorGuardado] = useState('')
+
+
+    if (esEdicion && !producto) {
+        return (
+            <div>
+                <div className="alert alert-warning">No existe un producto con id {id}.</div>
+                <Link to="/admin/productos" className="btn btn-outline-secondary">Volver al listado</Link>
+            </div>
+        )
+    }
+
 
     const cambiar = (e) => {
         const { name, value } = e.target
@@ -105,24 +134,30 @@ function ProductoFormulario() {
         e.preventDefault()
         setErrorGuardado('')
 
-        const erroresEncontrados = validar(datos)
+        const erroresEncontrados = validar(datos, id)
         setErrores(erroresEncontrados)
 
         
         if (Object.keys(erroresEncontrados).length > 0) return
 
+        const campos = {
+            nombre: datos.nombre.trim(),
+            genero: datos.genero,
+            tipo: datos.tipo,
+            precio: Number(datos.precio),
+            stock: Number(datos.stock),
+            stockCritico: Number(datos.stockCritico),
+            descripcion: datos.descripcion.trim(),
+            tallas: TALLAS,
+            colores: datos.colores.map((clave) => color(datos.genero, datos.tipo, COLORES[clave], clave))
+        }
+
         try {
-            crearProducto({
-                nombre: datos.nombre.trim(),
-                genero: datos.genero,
-                tipo: datos.tipo,
-                precio: Number(datos.precio),
-                stock: Number(datos.stock),
-                stockCritico: Number(datos.stockCritico),
-                descripcion: datos.descripcion.trim(),
-                tallas: TALLAS,
-                colores: datos.colores.map((clave) => color(datos.genero, datos.tipo, COLORES[clave], clave)),
-            })
+            if (esEdicion) {
+                actualizarProducto(id, campos)
+            } else {
+                crearProducto(campos)
+            }
             navegar('/admin/productos')
         } catch (err) {
             setErrorGuardado(err.message)
@@ -132,7 +167,7 @@ function ProductoFormulario() {
 
     return (
         <div style={{ maxWidth: '640px' }}>
-            <h1 className="h3 mb-3">Nuevo producto</h1>
+            <h1 className="h3 mb-3">{esEdicion ? 'Editar producto' : 'Nuevo producto'}</h1>
 
             {errorGuardado && <div className="alert alert-danger">{errorGuardado}</div>}
 
@@ -197,7 +232,9 @@ function ProductoFormulario() {
                 <Campo etiqueta="Descripción" nombre="descripcion" as="textarea" rows={3} valor={datos.descripcion} error={errores.descripcion} onChange={cambiar} />
 
                 <div className="d-flex gap-2">
-                    <button type="submit" className="btn btn-primary">Guardar</button>
+                    <button type="submit" className="btn btn-primary">
+                        {esEdicion ? 'Guardar cambios' : 'Guardar'}
+                    </button>
                     <Link to="/admin/productos" className="btn btn-outline-secondary">Cancelar</Link>
                 </div>
             </form>
