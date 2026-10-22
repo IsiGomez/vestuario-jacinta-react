@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { obtenerProductos,  eliminarProducto} from '../../data/productos'
+import { obtenerCategorias } from '../../data/categorias'
 import MiniaturaImagen from '../../components/MiniaturaImagen';
 import {formatearPrecio} from '../../utils/formato'
 
@@ -8,6 +9,8 @@ import {formatearPrecio} from '../../utils/formato'
 function ProductosAdmin() {
     const [productos, setProductos] = useState(obtenerProductos)
     const [error, setError] = useState('')
+
+    const [nombresCategoria] = useState(() => Object.fromEntries(obtenerCategorias().map((c) => [c.id, c.nombre])))
 
     const eliminar = (producto) => {
         if (!window.confirm(`¿Eliminar "${producto.nombre}"? Esta acción no se puede deshacer.`)) return
@@ -45,6 +48,7 @@ function ProductosAdmin() {
                             <th>Imagen</th>
                             <th className = "text-center">ID</th>
                             <th>Nombre</th>
+                            <th>Categoría</th>
                             <th>Género</th>
                             <th>Precio</th>
                             <th className = "text-center">Stock</th>
@@ -62,6 +66,7 @@ function ProductosAdmin() {
                                     </td>
                                     <td className = "text-center">{p.id}</td>
                                     <td>{p.nombre}</td>
+                                    <td>{nombresCategoria[p.categoriaId] ?? 'Sin categoría'}</td>
                                     <td className = "text-capitalize">{p.genero}</td>
                                     <td>{formatearPrecio(p.precio)}</td>
                                     <td className="text-center">
