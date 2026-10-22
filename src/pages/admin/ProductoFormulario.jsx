@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { validarTexto, validarPrecio, validarEnteroNoNegativo, validarRequerido } from '../../utils/validaciones'
+import { obtenerCategorias } from '../../data/categorias'
 import { crearProducto, obtenerProductos, color, TIPOS, COLORES, COLORES_CON_FOTOS, TALLAS, actualizarProducto, obtenerProductoPorId } from '../../data/productos'
 import Campo from '../../components/Campo'
 
 const VALORES_INICIALES = {
     nombre: '',
+    categoriaId: '',
     genero: '',
     tipo: '',
     precio: '',
@@ -18,6 +20,7 @@ const VALORES_INICIALES = {
 
 const productoAFormulario = (p) => ({
     nombre: p.nombre,
+    categoriaId: p.categoriaId ? String(p.categoriaId) : '',
     genero: p.genero,
     tipo: p.tipo,
     precio: String(p.precio),
@@ -31,6 +34,7 @@ const productoAFormulario = (p) => ({
 function validar(datos, idActual = null) {
     const errores = {
         nombre: validarTexto(datos.nombre, { campo: 'El nombre', min: 3, max: 80 }),
+        categoriaId: validarRequerido(datos.categoriaId, 'La categoría'),
         genero: validarRequerido(datos.genero, 'El género'),
         tipo: validarRequerido(datos.tipo, 'El tipo') ||
             (obtenerProductos().some((p) => p.genero === datos.genero && p.tipo === datos.tipo & p.id !== Number(idActual))
@@ -57,7 +61,7 @@ function ProductoFormulario() {
     const [datos, setDatos] = useState(producto ? productoAFormulario(producto) : VALORES_INICIALES)
     const [errores, setErrores] = useState({})
     const [errorGuardado, setErrorGuardado] = useState('')
-
+    const [categorias] = useState(obtenerCategorias)
 
     if (esEdicion && !producto) {
         return (
@@ -119,6 +123,7 @@ function ProductoFormulario() {
 
         const campos = {
             nombre: datos.nombre.trim(),
+            categoriaId: Number(datos.categoriaId),
             genero: datos.genero,
             tipo: datos.tipo,
             precio: Number(datos.precio),
@@ -152,7 +157,15 @@ function ProductoFormulario() {
                 <Campo etiqueta="Nombre" nombre="nombre" valor={datos.nombre} error={errores.nombre} onChange={cambiar} />
 
                 <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-12">
+                        <Campo etiqueta="Categoría" nombre="categoriaId" as="select" valor={datos.categoriaId} error={errores.categoriaId} onChange={cambiar}>
+                            <option value="">Selecciona...</option>
+                            {categorias.map((c) => (
+                                <option key={c.id} value={c.id}>{c.nombre}</option>
+                            ))}
+                        </Campo>
+                    </div>
+                    <div className="col-md-4">
                         <Campo etiqueta="Género" nombre="genero" as="select" valor={datos.genero} error={errores.genero} onChange={cambiar}>
                             <option value="">Selecciona...</option>
                             <option value="hombre">Hombre</option>
@@ -160,7 +173,7 @@ function ProductoFormulario() {
                             <option value="unisex">Unisex</option>
                         </Campo>
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-md-8">
                         <Campo etiqueta="Tipo" nombre="tipo" as="select" valor={datos.tipo} error={errores.tipo} onChange={cambiar} disabled={!datos.genero}>
                             <option value="">Selecciona...</option>
                             {tiposDisponibles.map((t) => (
