@@ -9,6 +9,8 @@ import CategoriasAdmin from '../pages/admin/CategoriasAdmin'
 import CategoriaFormulario from '../pages/admin/CategoriaFormulario'
 import OrdenesAdmin from '../pages/admin/OrdenesAdmin'
 import BoletaAdmin from '../pages/admin/BoletaAdmin'
+import ReportesAdmin from '../pages/admin/ReportesAdmin'
+import ReportesProductos from '../pages/admin/ReportesProductos'
 
 const rutasAdmin = [
     { 
@@ -41,8 +43,8 @@ const rutasAdmin = [
         element: <ProductosCriticos /> 
     },
     { 
-        path: 'productos/reportes', 
-        element: <PaginaPendiente titulo="Reportes de productos" /> 
+        path: 'reportes/productos', 
+        element: <ReportesProductos /> 
     },
 
     { 
@@ -77,7 +79,7 @@ const rutasAdmin = [
 
     { 
         path: 'reportes', 
-        element: <PaginaPendiente titulo="Reportes" /> 
+        element: <ReportesAdmin /> 
     },
     { 
         path: 'perfil', 
