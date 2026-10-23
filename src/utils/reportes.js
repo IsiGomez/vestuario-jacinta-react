@@ -1,4 +1,4 @@
-import { totalOrden } from '../data/ordenes'
+import { totalOrden, ESTADOS_ORDEN } from '../data/ordenes'
 
 export function resumenInventario(productos) {
     return {
@@ -34,7 +34,8 @@ export function resumenVentas(ordenes) {
 
     return {
         pagadas: pagadas.length,
-        fallidas: ordenes.length - pagadas.length,
+        fallidas: ordenes.filter((o) => o.estado === 'Pago fallido').length,
+        pendientes: ordenes.filter((o) => o.estado === 'Pendiente').length,
         montoTotal,
         ticketPromedio: pagadas.length === 0 ? 0 : Math.round(montoTotal / pagadas.length),
     }
@@ -59,4 +60,44 @@ export function productosMasVendidos(ordenes, limite = 5) {
     return Object.values(ventas)
         .sort((a, b) => b.unidades - a.unidades)
         .slice(0, limite)
+}
+
+
+export function ordenesPorEstado(ordenes) {
+    return ESTADOS_ORDEN.map((estado) => ({
+        estado,
+        cantidad: ordenes.filter((o) => o.estado === estado).length,
+    }))
+}
+
+
+export function ventasPorMes(ordenes, cantidadMeses = 6) {
+    const hoy = new Date()
+    const formato = new Intl.DateTimeFormat('es-CL', { month: 'short' })
+    const claveDe = (fecha) => `${fecha.getFullYear()}-${fecha.getMonth()}`
+    const meses = []
+
+    for (let i = cantidadMeses - 1; i >= 0; i--) {
+        const mes = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1)
+
+        meses.push({
+            clave: claveDe(mes),
+            etiqueta: formato.format(mes).replace('.', ''),
+            monto: 0,
+            ordenes: 0,
+        })
+    }
+
+    ordenes
+        .filter((o) => o.estado === 'Pagada')
+        .forEach((o) => {
+            const mes = meses.find((m) => m.clave === claveDe(new Date(o.fecha)))
+
+            if (mes) {
+                mes.monto += totalOrden(o)
+                mes.ordenes += 1
+            }
+        })
+
+    return meses
 }
