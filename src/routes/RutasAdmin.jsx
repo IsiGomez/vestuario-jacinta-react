@@ -1,4 +1,3 @@
-import PaginaPendiente from '../components/PaginaPendiente'
 import ProductosAdmin from '../pages/admin/ProductosAdmin'
 import ProductoFormulario from '../pages/admin/ProductoFormulario'
 import ProductosCriticos from '../pages/admin/ProductosCriticos'
@@ -12,11 +11,12 @@ import BoletaAdmin from '../pages/admin/BoletaAdmin'
 import ReportesAdmin from '../pages/admin/ReportesAdmin'
 import ReportesProductos from '../pages/admin/ReportesProductos'
 import HistorialCompras from '../pages/admin/HistorialCompras'
+import Dashboard from '../pages/admin/Dashboard'
 
 const rutasAdmin = [
     { 
         index: true, 
-        element: <PaginaPendiente titulo="Dashboard" /> 
+        element: <Dashboard /> 
     },
 
     { 
