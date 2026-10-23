@@ -1,0 +1,23 @@
+.dash-grafico {
+  min-height: 140px;
+}
+
+.dash-col {
+  min-width: 0;
+}
+
+.dash-valor {
+  font-size: 0.75rem;
+}
+
+.dash-area {
+  height: 100px;
+}
+
+.dash-barra {
+  transition: height 0.3s ease;
+}
+
+.dash-progreso {
+  height: 14px;
+}

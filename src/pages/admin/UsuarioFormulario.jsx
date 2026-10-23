@@ -131,12 +131,12 @@ function UsuarioFormulario() {
     }
 
     return (
-        <div style={{ maxWidth: '720px' }}>
+        <div className="pagina" style={{ maxWidth: '720px' }}>
             <h1 className="h3 mb-3">{esEdicion ? 'Editar usuario' : 'Nuevo usuario'}</h1>
 
             {errorGuardado && <div className="alert alert-danger">{errorGuardado}</div>}
 
-            <form onSubmit={enviar} noValidate>
+            <form onSubmit={enviar} noValidate className="card form-card p-4">
                 <div className="row">
                     <div className="col-md-6">
                         <Campo 
@@ -201,7 +201,8 @@ function UsuarioFormulario() {
                     </div>
                     <div className="col-md-6">
                         <Campo
-                            etiqueta={esEdicion ? 'Contraseña (déjala vacía para no cambiarla)' : 'Contraseña'}
+                            etiqueta="Contraseña"
+                            ayuda={esEdicion ? 'Déjala vacía para mantener la actual' : undefined}
                             nombre="contrasena" 
                             type="password" 
                             valor={datos.contrasena}

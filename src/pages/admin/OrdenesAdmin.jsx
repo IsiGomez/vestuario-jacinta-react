@@ -21,7 +21,7 @@ function OrdenesAdmin() {
     }
 
     return (
-        <div>
+        <div className="pagina">
             <div className="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
                 <h1 className="h3 mb-0">Órdenes / Boletas</h1>
 
@@ -63,7 +63,7 @@ function OrdenesAdmin() {
                                 </td>
                                 <td className="text-start">{formatearPrecio(totalOrden(o))}</td>
                                 <td>
-                                    <div className="d-flex" style={{ minWidth: '130px' }}>
+                                    <div className="d-flex ordenes-estado">
                                         <select
                                             className={`form-select form-select-sm fw-semibold ${
                                                 o.estado === 'Pagada' 

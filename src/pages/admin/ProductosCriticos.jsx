@@ -7,7 +7,7 @@ function ProductosCriticos() {
     const [criticos] = useState(() => obtenerProductosCriticos().sort((a, b) => a.stock - b.stock))
 
     return (
-        <div>
+        <div className="pagina">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h1 className="h3 mb-0">Productos críticos</h1>
                 

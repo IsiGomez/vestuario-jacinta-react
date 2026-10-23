@@ -47,7 +47,7 @@ function Dashboard() {
     const maxMonto = Math.max(...porMes.map((m) => m.monto), 1)
 
     return (
-        <div>
+        <div className="pagina">
             <div className="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-4">
                 <div>
                     <h1 className="h3 mb-1">Hola, {usuario.nombre}</h1>
@@ -109,17 +109,17 @@ function Dashboard() {
                         <div className="card-body">
                             <h2 className="h6 mb-3">Ventas de los últimos 6 meses</h2>
 
-                            <div className="d-flex gap-2 align-items-end" style={{ minHeight: '140px' }}>
+                            <div className="dash-grafico d-flex gap-2 align-items-end">
                                 {porMes.map((m) => (
                                     <div
                                         key={m.clave}
                                         className="dash-col flex-fill text-center"
                                         title={`${m.ordenes} orden(es) pagada(s)`}
                                     >
-                                        <div className="dash-valor small text-muted text-truncate" style={{ fontSize: '0.75rem' }}>
+                                        <div className="dash-valor small text-muted text-truncate">
                                             {m.monto > 0 ? formatearPrecio(m.monto) : '—'}
                                         </div>
-                                        <div className="dash-area d-flex align-items-end justify-content-center" style={{ height: '100px' }}>
+                                        <div className="dash-area d-flex align-items-end justify-content-center">
                                             {m.monto > 0 && (
                                                 <div
                                                     className="dash-barra bg-primary rounded-top w-100"
@@ -144,7 +144,7 @@ function Dashboard() {
                                 <p className="text-muted small mb-0">Todavía no hay órdenes.</p>
                             ) : (
                                 <>
-                                    <div className="progress mb-3" style={{ height: '14px' }}>
+                                    <div className="progress dash-progreso mb-3">
                                         {porEstado.map((e) => (
                                             <div
                                                 key={e.estado}
