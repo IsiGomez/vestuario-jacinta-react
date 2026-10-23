@@ -11,6 +11,7 @@ import OrdenesAdmin from '../pages/admin/OrdenesAdmin'
 import BoletaAdmin from '../pages/admin/BoletaAdmin'
 import ReportesAdmin from '../pages/admin/ReportesAdmin'
 import ReportesProductos from '../pages/admin/ReportesProductos'
+import HistorialCompras from '../pages/admin/HistorialCompras'
 
 const rutasAdmin = [
     { 
@@ -74,7 +75,7 @@ const rutasAdmin = [
     },
     { 
         path: 'usuarios/:id/historial', 
-        element: <PaginaPendiente titulo="Historial de compras" /> 
+        element: <HistorialCompras /> 
     },
 
     { 
