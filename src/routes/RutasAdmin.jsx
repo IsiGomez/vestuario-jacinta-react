@@ -10,6 +10,7 @@ import CategoriaFormulario from '../pages/admin/CategoriaFormulario'
 import OrdenesAdmin from '../pages/admin/OrdenesAdmin'
 import BoletaAdmin from '../pages/admin/BoletaAdmin'
 import ReportesAdmin from '../pages/admin/ReportesAdmin'
+import ReportesProductos from '../pages/admin/ReportesProductos'
 
 const rutasAdmin = [
     { 
@@ -43,7 +44,7 @@ const rutasAdmin = [
     },
     { 
         path: 'reportes/productos', 
-        element: <PaginaPendiente titulo="Reportes de productos" /> 
+        element: <ReportesProductos /> 
     },
 
     { 

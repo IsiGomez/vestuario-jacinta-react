@@ -30,6 +30,9 @@ function ProductosAdmin() {
                 <h1 className="h3 mb-0">Productos</h1>
                 
                 <div className="d-flex gap-2">
+                    <Link to="/admin/reportes/productos" className="btn btn-outline-primary btn-sm">
+                        <i className="bi bi-file-earmark-bar-graph me-1" /> Ver Reporte
+                    </Link>
                     <Link to="/admin/productos/criticos" className="btn btn-outline-danger btn-sm">
                         <i className="bi bi-exclamation-triangle me-1" /> Críticos
                     </Link>
@@ -83,6 +86,7 @@ function ProductosAdmin() {
                                             >
                                                 Editar
                                             </Link>
+                                            
                                             <button
                                                 type="button"
                                                 className="btn btn-outline-danger btn-sm flex-fill"
