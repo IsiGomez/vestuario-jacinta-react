@@ -19,7 +19,7 @@ function ReportesProductos() {
     const { resumen, porCategoria } = reporte
 
     return (
-        <div>
+        <div className="pagina">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h1 className="h3 mb-0">Reporte de productos</h1>
                 
@@ -61,7 +61,7 @@ function ReportesProductos() {
                             <th className="text-end">Valor</th>
                         </tr>
                     </thead>
-                    
+
                     <tbody>
                         {porCategoria.map((fila) => (
                             <tr key={fila.categoria}>

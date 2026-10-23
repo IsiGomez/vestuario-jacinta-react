@@ -148,7 +148,7 @@ function ProductoFormulario() {
 
 
     return (
-        <div style={{ maxWidth: '640px' }}>
+        <div className="pagina" style={{ maxWidth: '640px' }}>
             <h1 className="h3 mb-3">{esEdicion ? 'Editar producto' : 'Nuevo producto'}</h1>
 
             {errorGuardado && <div className="alert alert-danger">{errorGuardado}</div>}

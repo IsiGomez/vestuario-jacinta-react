@@ -25,7 +25,7 @@ function ProductosAdmin() {
     }
 
     return (
-        <div className = "p-3">
+        <div className = "pagina">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h1 className="h3 mb-0">Productos</h1>
                 
@@ -78,21 +78,21 @@ function ProductosAdmin() {
                                         </span>
                                     </td>
 
-                                    <td className="text-center text-nowrap">
-                                        <div className="d-flex gap-2 w-100">
+                                    <td className="text-nowrap">
+                                        <div className="acciones">
                                             <Link
                                                 to={`/admin/productos/${p.id}/editar`}
-                                                className="btn btn-outline-secondary btn-sm flex-fill"
+                                                className="btn btn-outline-secondary btn-sm"
                                             >
-                                                Editar
+                                                <i className="bi bi-pencil" /> Editar
                                             </Link>
-                                            
+
                                             <button
                                                 type="button"
-                                                className="btn btn-outline-danger btn-sm flex-fill"
+                                                className="btn btn-outline-danger btn-sm"
                                                 onClick={() => eliminar(p)}
                                             >
-                                                Eliminar
+                                                <i className="bi bi-trash" /> Eliminar
                                             </button>
                                         </div>
                                     </td>

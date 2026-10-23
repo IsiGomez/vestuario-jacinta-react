@@ -1,0 +1,39 @@
+.miniatura {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+.miniatura-vacia {
+  width: 50px;
+  font-size: 0.65rem;
+}
+
+.ordenes-estado {
+  min-width: 130px;
+}
+
+.border-warning,
+.select-pendiente {
+  border-color: #c69a2c !important;
+  color: #c08938 !important;
+}
+
+.acciones {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 15rem;
+}
+.acciones-3 {
+  min-width: 22rem;
+}
+.acciones > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.acciones > span {
+  display: flex;
+}
+.acciones .btn {
+  width: 100%;
+}

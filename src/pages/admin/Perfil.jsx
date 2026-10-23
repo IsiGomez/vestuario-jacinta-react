@@ -3,8 +3,9 @@ import { actualizarUsuario, obtenerUsuarioPorId } from '../../data/usuarios'
 import { useAuth } from '../../hooks/useAuth'
 import Campo from '../../components/Campo'
 import RegionComunaSelect from '../../components/RegionComunaSelect'
-import { formatearRun } from '../../utils/formato'
 import {
+    normalizarRun,
+    validarRun,
     validarNombre,
     validarApellidos,
     validarCorreo,
@@ -16,11 +17,13 @@ import {
 
 
 const perfilAFormulario = (u) => ({
+    run: u.run,
     nombre: u.nombre,
     apellidos: u.apellidos,
     correo: u.correo,
     contrasena: '',
     fechaNacimiento: u.fechaNacimiento ?? '',
+    tipoUsuario: u.tipoUsuario,
     region: u.region,
     comuna: u.comuna,
     direccion: u.direccion,
@@ -28,6 +31,7 @@ const perfilAFormulario = (u) => ({
 
 function validar(datos) {
     const errores = {
+        run: validarRun(datos.run),
         nombre: validarNombre(datos.nombre),
         apellidos: validarApellidos(datos.apellidos),
         correo: validarCorreo(datos.correo),
@@ -73,10 +77,12 @@ function Perfil() {
         if (Object.keys(erroresEncontrados).length > 0) return
 
         const campos = {
+            run: normalizarRun(datos.run),
             nombre: datos.nombre.trim(),
             apellidos: datos.apellidos.trim(),
             correo: datos.correo.trim(),
             fechaNacimiento: datos.fechaNacimiento,
+            tipoUsuario: datos.tipoUsuario,
             region: datos.region,
             comuna: datos.comuna,
             direccion: datos.direccion.trim(),
@@ -98,21 +104,23 @@ function Perfil() {
     }
 
     return (
-        <div style={{ maxWidth: '720px' }}>
+        <div className="pagina" style={{ maxWidth: '720px' }}>
             <h1 className="h3 mb-1">Perfil</h1>
             <p className="text-muted mb-4">Administra tu información personal y la de tu cuenta.</p>
 
             {guardado && <div className="alert alert-success">Tus datos se guardaron correctamente.</div>}
             {errorGuardado && <div className="alert alert-danger">{errorGuardado}</div>}
 
-            <form onSubmit={enviar} noValidate>
+            <form onSubmit={enviar} noValidate className="card form-card p-4">
                 <div className="row">
                     <div className="col-md-6">
                         <Campo 
                             etiqueta="RUN" 
                             nombre="run" 
-                            valor={formatearRun(sesion.run)} 
-                            disabled 
+                            valor={datos.run}
+                            error={errores.run}
+                            onChange={cambiar}
+                            maxLength={12} 
                         />
                     </div>
                     <div className="col-md-6">
@@ -159,7 +167,8 @@ function Perfil() {
                     </div>
                     <div className="col-md-6">
                         <Campo
-                            etiqueta="Nueva contraseña (déjala vacía para no cambiarla)"
+                            etiqueta="Nueva contraseña"
+                            ayuda='Déjala vacía para mantener la actual'
                             nombre="contrasena" 
                             type="password" 
                             valor={datos.contrasena}

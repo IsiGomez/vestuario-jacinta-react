@@ -67,9 +67,9 @@ function CategoriaFormulario() {
         }
     }
 
-    
+
     return (
-        <div style={{ maxWidth: '640px' }}>
+        <div className="pagina" style={{ maxWidth: '640px' }}>
             <h1 className="h3 mb-3">{esEdicion ? 'Editar categoría' : 'Nueva categoría'}</h1>
 
             {errorGuardado && <div className="alert alert-danger">{errorGuardado}</div>}

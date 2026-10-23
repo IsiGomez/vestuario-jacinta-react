@@ -5,7 +5,7 @@ export default function MiniaturaImagen({ src, alt }) {
 
     if (error || !src) {
         return (
-            <span className="badge bg-secondary text-wrap" style={{ width: '50px', fontSize: '10px' }}>
+            <span className="badge bg-secondary text-wrap miniatura-vacia">
                 Sin foto
             </span>
         );
@@ -15,8 +15,7 @@ export default function MiniaturaImagen({ src, alt }) {
         <img 
             src={src} 
             alt={alt} 
-            style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
-            className="rounded" 
+            className="rounded miniatura" 
             onError={() => setError(true)} 
         />
     );

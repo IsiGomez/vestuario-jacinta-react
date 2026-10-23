@@ -22,7 +22,7 @@ function HistorialCompras() {
     const totalGastado = pagadas.reduce((suma, o) => suma + totalOrden(o), 0)
 
     return (
-        <div>
+        <div className="pagina">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
                     <h1 className="h3 mb-0">Historial de compras</h1>

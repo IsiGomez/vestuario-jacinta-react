@@ -1,0 +1,66 @@
+:root {
+  --bs-body-bg: var(--jc-fondo);
+  --bs-body-color: var(--jc-texto);
+  --bs-body-font-family: var(--jc-fuente-base);
+  --bs-tertiary-bg-rgb: 235, 228, 221;     /* navbar (bg-body-tertiary) */
+  --bs-tertiary-bg: rgb(var(--bs-tertiary-bg-rgb));
+
+  --bs-primary: var(--jc-azul);
+  --bs-primary-rgb: var(--jc-azul-rgb);
+  --bs-secondary: var(--jc-texto-suave);
+  --bs-secondary-rgb: var(--jc-texto-suave-rgb);
+  --bs-success: var(--jc-verde-oscuro);
+  --bs-success-rgb: var(--jc-verde-oscuro-rgb);
+  --bs-danger: var(--jc-peligro);
+  --bs-danger-rgb: var(--jc-peligro-rgb);
+
+  --bs-link-color: var(--jc-azul);
+  --bs-link-color-rgb: var(--jc-azul-rgb);
+  --bs-link-hover-color: var(--jc-rojo-oscuro);
+  --bs-link-hover-color-rgb: var(--jc-rojo-oscuro-rgb);
+}
+
+.btn-primary,
+.btn-outline-primary{ 
+  --jc-btn: var(--jc-azul);        
+  --jc-btn-rgb: var(--jc-azul-rgb); 
+}
+.btn-success          { --jc-btn: var(--jc-verde-oscuro); --jc-btn-rgb: var(--jc-verde-oscuro-rgb); }
+.btn-danger,
+.btn-outline-danger   { --jc-btn: var(--jc-peligro);     --jc-btn-rgb: var(--jc-peligro-rgb); }
+.btn-outline-secondary { --jc-btn: var(--jc-texto-suave); --jc-btn-rgb: var(--jc-texto-suave-rgb); }
+
+
+.btn-primary,
+.btn-success,
+.btn-danger {
+  --bs-btn-bg: var(--jc-btn);
+  --bs-btn-border-color: var(--jc-btn);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--jc-btn) 85%, black);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--jc-btn) 85%, black);
+  --bs-btn-active-bg: color-mix(in srgb, var(--jc-btn) 75%, black);
+  --bs-btn-active-border-color: color-mix(in srgb, var(--jc-btn) 75%, black);
+  --bs-btn-disabled-bg: var(--jc-btn);
+  --bs-btn-disabled-border-color: var(--jc-btn);
+  --bs-btn-focus-shadow-rgb: var(--jc-btn-rgb);
+}
+
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-danger {
+  --bs-btn-color: var(--jc-btn);
+  --bs-btn-border-color: var(--jc-btn);
+  --bs-btn-hover-bg: var(--jc-btn);
+  --bs-btn-hover-border-color: var(--jc-btn);
+  --bs-btn-active-bg: var(--jc-btn);
+  --bs-btn-active-border-color: var(--jc-btn);
+  --bs-btn-disabled-color: var(--jc-btn);
+  --bs-btn-disabled-border-color: var(--jc-btn);
+  --bs-btn-focus-shadow-rgb: var(--jc-btn-rgb);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: color-mix(in srgb, var(--jc-azul) 60%, white);
+  box-shadow: 0 0 0 0.25rem rgba(var(--jc-azul-rgb), 0.2);
+}

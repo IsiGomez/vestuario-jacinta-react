@@ -1,0 +1,10 @@
+@import './base/variables.css';
+@import './base/bootstrap-theme.css';
+@import './base/global.css';
+
+@import './layouts/admin.css';
+@import './layouts/tienda.css';
+
+@import './components/tablas.css';
+
+@import './pages/dashboard.css';

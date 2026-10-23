@@ -1,18 +1,25 @@
 .admin-layout {
-  --adm-azul: #25224c;
-  --adm-rojo: #986158;
-  --adm-fondo: #e3deda;
+  --adm-azul: color-mix(in srgb, var(--jc-azul) 90%, black); /* sidebar menos negro */
+  --adm-fondo: #ece7e2;                                       /* fondo más claro */
 }
- 
-/* Barra lateral */
 .admin-sidebar {
   background-color: var(--adm-azul);
   color: var(--jc-fondo);
-  border-right: 4px solid var(--adm-rojo);
-  min-width: 300px;
+  border-bottom: 4px solid var(--adm-rojo);
 }
+@media (min-width: 768px) {
+  .admin-sidebar {
+    width: var(--adm-ancho-sidebar);
+    border-bottom: 0;
+    border-right: 4px solid var(--adm-rojo);
+  }
+}
+.admin-sidebar :focus-visible {
+  outline-color: var(--jc-fondo);
+}
+
 .admin-marca {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--jc-fuente-titulo);
   font-weight: 700;
   font-size: 1.6rem;
   color: var(--jc-fondo);
@@ -22,28 +29,28 @@
   color: var(--jc-gris);
   text-align: center;
 }
+
 .admin-sidebar .nav-pills {
   --bs-nav-link-color: var(--jc-fondo);
   --bs-nav-link-hover-color: white;
   --bs-nav-pills-link-active-bg: var(--adm-rojo);
   --bs-nav-pills-link-active-color: white;
 }
+
 .admin-salir {
   background-color: transparent;
   border: 1px solid var(--jc-rojo);
   color: var(--jc-rojo);
 }
-.admin-salir:hover {
+.admin-salir:hover,
+.admin-salir:focus {
   background-color: var(--jc-rojo);
   color: var(--adm-azul);
 }
 .admin-salir:focus {
-  background-color: var(--jc-rojo);
-  color: var(--adm-azul);
   border-color: var(--adm-fondo);
 }
 
-/* Contenido */
 .admin-main {
   background-color: var(--adm-fondo);
   color: var(--adm-azul);

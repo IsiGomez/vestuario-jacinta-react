@@ -18,7 +18,7 @@ function BoletaAdmin() {
     const { cliente, entrega } = orden
 
     return (
-        <div style={{ maxWidth: '800px' }}>
+        <div className="pagina" style={{ maxWidth: '800px' }}>
             <div className="d-flex justify-content-between align-items-start mb-3">
                 <div>
                     <h1 className="h3 mb-1">Boleta #{orden.numero}</h1>

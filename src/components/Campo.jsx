@@ -1,4 +1,4 @@
-function Campo({ etiqueta, nombre, valor, error, onChange, as: Control = 'input', children, ...resto }) {
+function Campo({ etiqueta, nombre, valor, error, ayuda, onChange, as: Control = 'input', children, ...resto }) {
     const clase = Control === 'select' ? 'form-select' : 'form-control'
 
     return (
@@ -16,6 +16,7 @@ function Campo({ etiqueta, nombre, valor, error, onChange, as: Control = 'input'
                 {children}
             </Control>
 
+            {ayuda && !error && <div className="form-text">{ayuda}</div>}
             {error && <div className="invalid-feedback">{error}</div>}
         </div>
     )

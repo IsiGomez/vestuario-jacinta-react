@@ -18,7 +18,7 @@ function ReportesAdmin() {
     const { ventas, masVendidos } = reporte
 
     return (
-        <div>
+        <div className="pagina">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h1 className="h3 mb-1">Reportes</h1>
@@ -56,8 +56,8 @@ function ReportesAdmin() {
                     <thead>
                         <tr>
                             <th>Producto</th>
-                            <th className="text-end">Unidades vendidas</th>
-                            <th className="text-end">Monto</th>
+                            <th className="text-center">Unidades vendidas</th>
+                            <th className="text-center">Monto</th>
                         </tr>
                     </thead>
                     
@@ -65,8 +65,8 @@ function ReportesAdmin() {
                         {masVendidos.map((p) => (
                             <tr key={p.productoId}>
                                 <td>{p.nombre}</td>
-                                <td className="text-end">{p.unidades}</td>
-                                <td className="text-end">{formatearPrecio(p.monto)}</td>
+                                <td className="text-center">{p.unidades}</td>
+                                <td className="text-center">{formatearPrecio(p.monto)}</td>
                             </tr>
                         ))}
 

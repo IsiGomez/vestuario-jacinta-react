@@ -4,6 +4,9 @@ import { obtenerUsuarios, eliminarUsuario } from '../../data/usuarios'
 import { useAuth } from '../../hooks/useAuth'
 import { formatearRun } from '../../utils/formato'
 
+const iniciales = (u) => `${u.nombre?.[0] ?? ''}${u.apellidos?.[0] ?? ''}`.toUpperCase()
+const claseTipo = (u) => (u.tipoUsuario === 'Administrador' ? 'admin' : 'cliente')
+
 function UsuariosAdmin() {
     const { usuario: sesion } = useAuth()
     const [usuarios, setUsuarios] = useState(obtenerUsuarios)
@@ -27,7 +30,7 @@ function UsuariosAdmin() {
 
 
     return (
-        <div>
+        <div className="pagina">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h1 className="h3 mb-0">Usuarios</h1>
                 
@@ -67,32 +70,32 @@ function UsuariosAdmin() {
                                     </td>
                                     <td>{u.region} / {u.comuna}</td>
                                     
-                                    <td className="text-center text-nowrap">
-                                        <div className="d-flex gap-2 w-100">
+                                    <td className="text-nowrap">
+                                        <div className="acciones acciones-3">
                                             <Link
                                                 to={`/admin/usuarios/${u.id}/editar`}
-                                                className="btn btn-outline-secondary btn-sm flex-fill"
+                                                className="btn btn-outline-secondary btn-sm"
                                             >
-                                                Editar
+                                                <i className="bi bi-pencil me-1" /> Editar
                                             </Link>
 
                                             {u.tipoUsuario === 'Cliente' && (
                                                 <Link
                                                     to={`/admin/usuarios/${u.id}/historial`}
-                                                    className="btn btn-outline-secondary btn-sm flex-fill"
+                                                    className="btn btn-outline-secondary btn-sm"
                                                 >
-                                                    Historial
+                                                    <i className="bi bi-clock-history me-1" /> Historial
                                                 </Link>
                                             )}
 
-                                            <span title={motivo} className="d-flex flex-fill">
+                                            <span title={motivo}>
                                                 <button
                                                     type="button"
-                                                    className="btn btn-outline-danger btn-sm w-100"
+                                                    className="btn btn-outline-danger btn-sm"
                                                     disabled={Boolean(motivo)}
                                                     onClick={() => eliminar(u)}
                                                 >
-                                                    Eliminar
+                                                    <i className="bi bi-trash me-1" /> Eliminar
                                                 </button>
                                             </span>
                                         </div>

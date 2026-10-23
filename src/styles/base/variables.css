@@ -1,0 +1,21 @@
+:root {
+  --jc-fondo: #f4efea;
+  --jc-rojo: #d98a7d;
+  --jc-verde: #8c9a7b;
+  --jc-gris: #a19eac;
+  --jc-azul-rgb: 46, 43, 95;
+  --jc-azul: rgb(var(--jc-azul-rgb));
+
+  --jc-rojo-oscuro-rgb: 152, 97, 88;
+  --jc-rojo-oscuro: rgb(var(--jc-rojo-oscuro-rgb));
+  --jc-verde-oscuro-rgb: 108, 140, 76;
+  --jc-verde-oscuro: rgb(var(--jc-verde-oscuro-rgb));
+  --jc-peligro-rgb: 179, 71, 66;
+  --jc-peligro: rgb(var(--jc-peligro-rgb));
+  --jc-texto-suave-rgb: 107, 104, 128;
+  --jc-texto-suave: rgb(var(--jc-texto-suave-rgb));
+
+  --jc-texto: #333333;
+  --jc-fuente-base: 'Poppins', sans-serif;
+  --jc-fuente-titulo: 'Playfair Display', serif;
+}
