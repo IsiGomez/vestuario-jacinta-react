@@ -4,7 +4,8 @@ const CLAVE = 'jacinta_productos'
 
 // /assets/img/productos/<genero>/<tipo>/<color>_<n>.jpg
 // Las 4 vistas de cada color son _1 a _4.
-const rutaImagen = (genero, tipo, clave, n) =>  `/assets/img/productos/${genero}/${tipo}/${clave}_${n}.jpg`
+const rutaImagen = (genero, tipo, clave, n) =>
+`${import.meta.env.BASE_URL}assets/img/productos/${genero}/${tipo}/${clave}_${n}.jpg`
 
 const imagenesDeColor = (genero, tipo, clave) => [1, 2, 3, 4].map((n) => rutaImagen(genero, tipo, clave, n))
 

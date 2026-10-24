@@ -12,7 +12,7 @@ function TiendaLayout() {
                 <Container>
                     <Navbar.Brand as={Link} to="/" className="d-flex align-items-center py-0">
                         <img
-                            src="/assets/img/logo.svg"
+                            src={`${import.meta.env.BASE_URL}assets/img/logo.svg`}
                             alt="Jacinta Logo"
                             className="navbar-logo"
                         />
