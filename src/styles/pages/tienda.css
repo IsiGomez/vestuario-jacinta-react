@@ -1,0 +1,112 @@
+.titulo-seccion {
+  background-color: var(--jc-durazno);
+  border-radius: 10px;
+  padding: 1.25rem 1rem;
+  color: var(--jc-azul);
+}
+
+.titulo-seccion h2 {
+  color: var(--jc-azul);
+}
+
+.titulo-seccion p {
+  color: var(--jc-texto-suave) !important;
+}
+
+.titulo-video {
+  display: inline-block;
+  background-color: color-mix(in srgb, var(--jc-rojo) 25%, transparent);
+  color: var(--jc-azul);
+  border-radius: 999px;
+  padding: 0.35rem 1.25rem;
+}
+
+
+
+.hero {
+  width: var(--jc-ancho-pantalla);
+  margin-left: var(--jc-margen-pantalla);
+  background: var(--jc-degradado-hero);
+}
+
+.hero h1 {
+  color: var(--jc-azul);
+}
+
+.hero p {
+  color: var(--jc-texto-suave) !important;
+}
+
+
+
+.seccion-stock {
+  background: var(--jc-degradado-stock);
+  border-radius: 10px;
+  margin-bottom: 3rem;
+}
+
+.alert-tienda {
+  --bs-alert-color: var(--jc-azul);
+  --bs-alert-bg: var(--jc-blanco);
+  --bs-alert-border-color: color-mix(in srgb, var(--jc-rojo) 60%, var(--jc-blanco));
+  --bs-alert-link-color: var(--jc-azul);
+}
+
+.titulo-stock h2 {
+  color: var(--jc-azul);
+  display: inline-block;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid var(--jc-rojo);
+}
+
+
+
+.btn-tienda {
+  background-color: var(--jc-rojo);
+  border: 3px solid color-mix(in srgb, var(--jc-rojo), black 20%);
+}
+.btn-tienda:hover,
+.btn-tienda:focus-visible {
+  background-color: color-mix(in srgb, var(--jc-rojo), black 5%);
+  border-color: color-mix(in srgb, var(--jc-rojo), black 40%);
+}
+
+.btn-tienda:active {
+  background-color: color-mix(in srgb, var(--jc-rojo), black 10%) !important;
+  border-color: color-mix(in srgb, var(--jc-rojo), black 25%) !important;
+}
+
+
+
+.footer {
+  width: var(--jc-ancho-pantalla);
+  margin-left: var(--jc-margen-pantalla);
+  background-color: var(--jc-durazno);
+  color: var(--jc-azul);
+}
+
+.footer .footer-bloque {
+  background-color: color-mix(in srgb, var(--jc-durazno), black 6%);
+  padding: 1.5rem 1rem;
+}
+
+.footer h5 {
+  font-family: var(--jc-fuente-titulo);
+  font-weight: 700;
+  color: var(--jc-azul);
+}
+
+.footer .footer-redes a {
+  color: var(--jc-verde);
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.footer .footer-redes a:hover {
+  color: var(--jc-verde-oscuro);
+}
+
+.footer hr {
+  border-color: var(--jc-azul);
+  opacity: 0.25;
+}

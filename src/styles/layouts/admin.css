@@ -32,9 +32,9 @@
 
 .admin-sidebar .nav-pills {
   --bs-nav-link-color: var(--jc-fondo);
-  --bs-nav-link-hover-color: white;
+  --bs-nav-link-hover-color: var(--jc-blanco);
   --bs-nav-pills-link-active-bg: var(--adm-rojo);
-  --bs-nav-pills-link-active-color: white;
+  --bs-nav-pills-link-active-color: var(--jc-blanco);
 }
 
 .admin-salir {

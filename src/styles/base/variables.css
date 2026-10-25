@@ -16,6 +16,17 @@
   --jc-texto-suave-rgb: 107, 104, 128;
   --jc-texto-suave: rgb(var(--jc-texto-suave-rgb));
 
+  --jc-blanco: #ffffff;
+  --jc-durazno: #e2c6bb;
+  --jc-durazno-claro: #f1e3dc;
+  --jc-durazno-suave: #f8efea;
+
+  --jc-degradado-hero: linear-gradient(135deg, var(--jc-durazno) 0%, var(--jc-blanco) 100%);
+  --jc-degradado-stock: linear-gradient(180deg, var(--jc-durazno-claro) 0%, var(--jc-durazno-suave) 100%);
+
+  --jc-ancho-pantalla: 100vw;
+  --jc-margen-pantalla: calc(50% - 50vw);
+
   --jc-texto: #333333;
   --jc-fuente-base: 'Poppins', sans-serif;
   --jc-fuente-titulo: 'Playfair Display', serif;

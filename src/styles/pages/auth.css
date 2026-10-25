@@ -3,13 +3,13 @@
 }
 
 .auth-tarjeta {
-  background-color: white;
+  background-color: var(--jc-blanco);
   border-top: 4px solid var(--jc-rojo);
   border-radius: 0.75rem;
   padding: 2rem;
   box-shadow: 0 0.5rem 1.5rem rgba(var(--jc-azul-rgb), 0.08);
 
-  --bs-body-bg: white;
+  --bs-body-bg: var(--jc-blanco);
   --bs-border-color: rgba(var(--jc-azul-rgb), 0.35);
 }
 
@@ -43,8 +43,9 @@
   color: var(--jc-texto-suave);
 }
 
+
 .btn-auth {
-  background-color: white;
+  background-color: var(--jc-blanco);
   border: 3px solid var(--jc-rosa);
   color: var(--jc-rosa);
 }

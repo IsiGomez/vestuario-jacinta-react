@@ -61,6 +61,6 @@
 
 .form-control:focus,
 .form-select:focus {
-  border-color: color-mix(in srgb, var(--jc-azul) 60%, white);
+  border-color: color-mix(in srgb, var(--jc-azul) 60%, var(--jc-blanco));
   box-shadow: 0 0 0 0.25rem rgba(var(--jc-azul-rgb), 0.2);
 }
