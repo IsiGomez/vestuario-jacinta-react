@@ -12,6 +12,9 @@ import DetalleBlog from '../pages/tienda/DetalleBlog'
 import Categoria from '../pages/tienda/Categoria'
 import Categorias from '../pages/tienda/Categorias'
 import Ofertas from '../pages/tienda/Ofertas'
+import Checkout from '../pages/tienda/Checkout'
+import CompraExitosa from '../pages/tienda/CompraExitosa'
+import CompraError from '../pages/tienda/CompraError'
 
 const rutasTienda = [
     { 
@@ -70,15 +73,15 @@ const rutasTienda = [
     },
     { 
         path: 'checkout', 
-        element: <PaginaPendiente titulo="Checkout (comprar)" /> 
+        element: <Checkout /> 
     },
     { 
         path: 'compra/exitosa/:ordenId', 
-        element: <PaginaPendiente titulo="Compra exitosa" /> 
+        element: <CompraExitosa /> 
     },
     { 
         path: 'compra/error/:ordenId', 
-        element: <PaginaPendiente titulo="No se pudo realizar el pago" /> 
+        element: <CompraError /> 
     }
 ]
 
