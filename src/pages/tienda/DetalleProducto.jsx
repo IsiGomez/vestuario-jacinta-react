@@ -6,11 +6,13 @@ import { useCarrito } from '../../context/CarritoContext'
 function DetalleProducto() {
     const { id } = useParams()
     const producto = obtenerProductoPorId(id)
-    const { agregarProducto } = useCarrito()
+    const { agregarProducto, disponibleParaAgregar, unidadesEnCarrito } = useCarrito()
 
     const [colorSeleccionado, setColorSeleccionado] = useState(0)
     const [tallaSeleccionada, setTallaSeleccionada] = useState(null)
     const [imagenActiva, setImagenActiva] = useState(0)
+    const [cantidad, setCantidad] = useState(1)
+    const [mensaje, setMensaje] = useState(null)
 
     useEffect(() => {
         setImagenActiva(0)
@@ -30,8 +32,28 @@ function DetalleProducto() {
     const imagenes = colorActual?.imagenes || []
     const tallas = producto.tallas || []
 
-    if (tallaSeleccionada === null && tallas.length > 0) {
-        setTallaSeleccionada(tallas[0])
+    const tallaActual = tallaSeleccionada ?? tallas[0] ?? null
+
+    // El stock es por producto: se descuenta lo que ya hay en el carrito (de cualquier talla o color)
+    const disponible = disponibleParaAgregar(producto.id)
+    const enCarrito = unidadesEnCarrito(producto.id)
+    const cantidadElegida = Math.min(Math.max(cantidad, 1), Math.max(disponible, 1))
+
+    const cambiarCantidad = (valor) =>
+        setCantidad(Math.min(Math.max(Math.floor(Number(valor)) || 1, 1), disponible))
+
+    const agregar = () => {
+        if (tallas.length > 0 && !tallaActual) {
+            setMensaje({ tipo: 'warning', texto: 'Selecciona una talla' })
+            return
+        }
+
+        agregarProducto(producto, cantidadElegida, tallaActual, colorActual)
+        setMensaje({
+            tipo: 'success',
+            texto: cantidadElegida === 1 ? 'Producto agregado al carrito.' : `${cantidadElegida} unidades agregadas al carrito.`,
+        })
+        setCantidad(1)
     }
 
     const cambiarColor = (idx) => {
@@ -147,7 +169,7 @@ function DetalleProducto() {
                                 {tallas.map((talla) => (
                                     <button
                                         key={talla}
-                                        className={`btn btn-sm ${tallaSeleccionada === talla ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                        className={`btn btn-sm ${tallaActual === talla ? 'btn-primary' : 'btn-outline-secondary'}`}
                                         onClick={() => setTallaSeleccionada(talla)}
                                     >
                                         {talla}
@@ -159,23 +181,63 @@ function DetalleProducto() {
 
                     <p className="mb-3">
                         <span className={`badge ${producto.stock > 0 ? 'bg-success' : 'bg-danger'}`}>
-                            {producto.stock > 0 ? `Stock: ${producto.stock}` : 'Sin stock'}
+                            {producto.stock > 0 ? `Stock: ${producto.stock}` : 'Agotado'}
                         </span>
+                        {enCarrito > 0 && <span className="text-muted small ms-2">Ya tienes {enCarrito} en tu carrito</span>}
                     </p>
 
-                    <button 
-                        className="btn btn-primary btn-lg w-100" 
-                        disabled={producto.stock === 0}
-                        onClick={() => {
-                            if (tallas.length > 0 && !tallaSeleccionada) {
-                                alert('Selecciona una talla')
-                                return
-                            }
-                            agregarProducto(producto, 1, tallaSeleccionada, colorActual)
-                            alert('Producto agregado al carrito')
-                        }}
+                    {disponible > 0 && (
+                        <div className="mb-3">
+                            <label htmlFor="cantidad" className="fw-semibold mb-2 d-block">Cantidad</label>
+                            <div className="input-group" style={{ maxWidth: '10rem' }}>
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-secondary"
+                                    aria-label="Disminuir cantidad"
+                                    disabled={cantidadElegida <= 1}
+                                    onClick={() => cambiarCantidad(cantidadElegida - 1)}
+                                >
+                                    &minus;
+                                </button>
+                                <input
+                                    id="cantidad"
+                                    type="number"
+                                    className="form-control text-center"
+                                    min={1}
+                                    max={disponible}
+                                    value={cantidadElegida}
+                                    onChange={(e) => cambiarCantidad(e.target.value)}
+                                />
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-secondary"
+                                    aria-label="Aumentar cantidad"
+                                    disabled={cantidadElegida >= disponible}
+                                    onClick={() => cambiarCantidad(cantidadElegida + 1)}
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {mensaje && (
+                        <div className={`alert alert-${mensaje.tipo}`} role="alert">
+                            {mensaje.texto}{' '}
+                            {mensaje.tipo === 'success' && <Link to="/carrito" className="alert-link">Ver carrito</Link>}
+                        </div>
+                    )}
+
+                    <button
+                        className="btn btn-primary btn-lg w-100"
+                        disabled={disponible === 0}
+                        onClick={agregar}
                     >
-                        {producto.stock > 0 ? 'Agregar al carrito' : 'Sin stock'}
+                        {producto.stock === 0
+                            ? 'Agotado'
+                            : disponible === 0
+                                ? 'Ya tienes todo el stock en tu carrito'
+                                : 'Agregar al carrito'}
                     </button>
                 </div>
             </div>

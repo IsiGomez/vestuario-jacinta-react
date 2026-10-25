@@ -1,4 +1,3 @@
-import PaginaPendiente from '../components/PaginaPendiente'
 import Login from '../pages/tienda/Login'
 import Registro from '../pages/tienda/Registro'
 import Productos from '../pages/tienda/Productos'
@@ -11,7 +10,6 @@ import Blog from '../pages/tienda/Blog'
 import DetalleBlog from '../pages/tienda/DetalleBlog'
 import Categoria from '../pages/tienda/Categoria'
 import Categorias from '../pages/tienda/Categorias'
-import Ofertas from '../pages/tienda/Ofertas'
 import Checkout from '../pages/tienda/Checkout'
 import CompraExitosa from '../pages/tienda/CompraExitosa'
 import CompraError from '../pages/tienda/CompraError'
@@ -35,10 +33,6 @@ const rutasTienda = [
     { 
         path: 'categorias/:categoria', 
         element: <Categoria /> 
-    },
-    { 
-        path: 'ofertas', 
-        element: <Ofertas /> 
     },
     { 
         path: 'nosotros', 

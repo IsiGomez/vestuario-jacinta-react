@@ -26,7 +26,6 @@ function TiendaLayout() {
                             <Nav.Link as={NavLink} to="/" end>Home</Nav.Link>
                             <Nav.Link as={NavLink} to="/productos">Productos</Nav.Link>
                             <Nav.Link as={NavLink} to="/categorias">Categorías</Nav.Link>
-                            <Nav.Link as={NavLink} to="/ofertas">Ofertas</Nav.Link>
                             <Nav.Link as={NavLink} to="/nosotros">Nosotros</Nav.Link>
                             <Nav.Link as={NavLink} to="/blog">Blog</Nav.Link>
                             <Nav.Link as={NavLink} to="/contacto">Contacto</Nav.Link>

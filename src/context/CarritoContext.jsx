@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { leer, guardar } from '../utils/storage'
 import { useAuth } from '../hooks/useAuth'
+import { obtenerProductoPorId } from '../data/productos'
 
 const CarritoContext = createContext(null)
 
@@ -15,6 +16,9 @@ function obtenerCarritoPorClave(clave) {
     const guardado = leer(clave, [])
     return Array.isArray(guardado) ? guardado : []
 }
+
+const stockDe = (id) => obtenerProductoPorId(id)?.stock ?? 0
+const unidadesDe = (lista, id) => lista.reduce((suma, item) => (item.id === id ? suma + item.cantidad : suma), 0)
 
 export function CarritoProvider({ children }) {
     const { usuario } = useAuth()
@@ -38,6 +42,10 @@ export function CarritoProvider({ children }) {
         if (cantidadNum <= 0) return
 
         setCarrito((anterior) => {
+            const disponible = stockDe(producto.id) - unidadesDe(anterior, producto.id)
+            const cantidadFinal = Math.min(cantidadNum, disponible)
+            if (cantidadFinal <= 0) return anterior
+
             const indice = anterior.findIndex(
                 (item) =>
                     item.id === producto.id &&
@@ -49,7 +57,7 @@ export function CarritoProvider({ children }) {
                 const copia = [...anterior]
                 copia[indice] = {
                     ...copia[indice],
-                    cantidad: copia[indice].cantidad + cantidadNum,
+                    cantidad: copia[indice].cantidad + cantidadFinal,
                 }
                 return copia
             }
@@ -66,7 +74,7 @@ export function CarritoProvider({ children }) {
                     imagen,
                     talla,
                     color: colorActual ? { nombre: colorActual.nombre, clave: colorActual.clave } : null,
-                    cantidad: cantidadNum,
+                    cantidad: cantidadFinal,
                 },
             ]
         })
@@ -107,8 +115,14 @@ export function CarritoProvider({ children }) {
         }
         setCarrito((anterior) => {
             const copia = [...anterior]
-            if (!copia[indice]) return anterior
-            copia[indice] = { ...copia[indice], cantidad: cantidadNum }
+            const item = copia[indice]
+            if (!item) return anterior
+
+            const maximo = stockDe(item.id) - (unidadesDe(anterior, item.id) - item.cantidad)
+            const nueva = Math.min(cantidadNum, maximo)
+            if (nueva <= 0) return anterior
+
+            copia[indice] = { ...item, cantidad: nueva }
             return copia
         })
     }
@@ -125,8 +139,14 @@ export function CarritoProvider({ children }) {
         return carrito.reduce((total, item) => total + item.cantidad, 0)
     }
 
+    const disponibleParaAgregar = (id) => Math.max(stockDe(id) - unidadesDe(carrito, id), 0)
+
+    const unidadesEnCarrito = (id) => unidadesDe(carrito, id)
+
     const valor = {
         carrito,
+        disponibleParaAgregar,
+        unidadesEnCarrito,
         agregarProducto,
         quitarCantidad,
         eliminarProducto,

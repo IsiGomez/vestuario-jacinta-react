@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useCarrito } from '../../context/CarritoContext'
 
 function Carrito() {
-    const { carrito, quitarCantidad, eliminarProducto, vaciarCarrito, obtenerTotal } = useCarrito()
+    const { carrito, quitarCantidad, actualizarCantidad, eliminarProducto, vaciarCarrito, obtenerTotal, disponibleParaAgregar } = useCarrito()
 
     if (carrito.length === 0) {
         return (
@@ -69,7 +69,11 @@ function Carrito() {
                                                         -
                                                     </button>
                                                     <span className="px-2">{item.cantidad}</span>
-                                                    <button className="btn btn-sm btn-outline-secondary" onClick={() => agregarProducto({ id: item.id, nombre: item.nombre, precio: item.precio, colores: item.imagen ? [{ imagenes: [item.imagen], nombre: item.color?.nombre, clave: item.color?.clave }] : [] }, 1, item.talla, item.color)}>
+                                                    <button
+                                                        className="btn btn-sm btn-outline-secondary"
+                                                        disabled={disponibleParaAgregar(item.id) <= 0}
+                                                        onClick={() => actualizarCantidad(idx, item.cantidad + 1)}
+                                                    >
                                                         +
                                                     </button>
                                                 </div>

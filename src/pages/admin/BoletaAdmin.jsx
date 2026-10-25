@@ -51,7 +51,9 @@ function BoletaAdmin() {
                                 {entrega.departamento && `, Depto ${entrega.departamento}`}
                             </div>
                             
-                            <div className="text-muted">{entrega.comuna}, {entrega.region}</div>
+                            {(entrega.comuna || entrega.region) && (
+                                <div className="text-muted">{[entrega.comuna, entrega.region].filter(Boolean).join(', ')}</div>
+                            )}
                             {entrega.indicaciones && <div className="small mt-1">{entrega.indicaciones}</div>}
                         </div>
                     </div>
@@ -71,8 +73,15 @@ function BoletaAdmin() {
 
                     <tbody>
                         {orden.items.map((item) => (
-                            <tr key={item.productoId}>
-                                <td>{item.nombre}</td>
+                            <tr key={`${item.productoId}-${item.talla}-${item.color}`}>
+                                <td>
+                                    {item.nombre}
+                                    {(item.talla || item.color) && (
+                                        <div className="small text-muted">
+                                            {[item.talla && `Talla ${item.talla}`, item.color && `Color ${item.color}`].filter(Boolean).join(' · ')}
+                                        </div>
+                                    )}
+                                </td>
                                 <td className="text-end">{formatearPrecio(item.precio)}</td>
                                 <td className="text-end">{item.cantidad}</td>
                                 <td className="text-end">{formatearPrecio(item.precio * item.cantidad)}</td>

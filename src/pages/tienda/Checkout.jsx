@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useCarrito } from '../../context/CarritoContext'
 import { useAuth } from '../../hooks/useAuth'
 import { crearOrden } from '../../data/ordenes'
+import { StockInsuficienteError } from '../../data/productos'
 import RegionComunaSelect from '../../components/RegionComunaSelect'
 
 const OPCIONES_ENTREGA = [
@@ -28,6 +29,7 @@ function Checkout() {
     })
 
     const [errores, setErrores] = useState({})
+    const [errorCompra, setErrorCompra] = useState('')
 
     if (carrito.length === 0) {
         return (
@@ -63,26 +65,42 @@ function Checkout() {
     const finalizar = (e) => {
         e.preventDefault()
         if (!validar()) return
+        setErrorCompra('')
 
         try {
+            const [nombre, ...apellidos] = datos.nombre.trim().split(/\s+/)
+            const domicilio = datos.entrega === 'domicilio'
+
+            const items = carrito.map((item) => ({
+                productoId: item.id,
+                nombre: item.nombre,
+                precio: item.precio,
+                cantidad: item.cantidad,
+                talla: item.talla,
+                color: item.color?.nombre,
+                imagen: item.imagen,
+            }))
+
             const orden = crearOrden({
                 usuarioId: usuario?.id || null,
-                items: carrito.map((item) => ({
-                    productoId: item.id,
-                    nombre: item.nombre,
-                    precio: item.precio,
-                    cantidad: item.cantidad,
-                    talla: item.talla,
-                    color: item.color?.nombre,
-                    imagen: item.imagen,
-                })),
-                total,
-                datosEntrega: datos,
+                cliente: { nombre, apellidos: apellidos.join(' '), correo: datos.correo.trim() },
+                entrega: {
+                    calle: domicilio ? datos.direccion.trim() : 'Retiro en tienda',
+                    departamento: '',
+                    region: domicilio ? datos.region : '',
+                    comuna: domicilio ? datos.comuna : '',
+                    indicaciones: datos.notas.trim(),
+                },
+                items,
                 estado: 'Pendiente',
-            })
+            }, { reservarStock: true })
             vaciarCarrito()
             navigate(`/compra/exitosa/${orden.id}`)
         } catch (error) {
+            if (error instanceof StockInsuficienteError) {
+                setErrorCompra(error.message)
+                return
+            }
             navigate('/compra/error/0')
         }
     }
@@ -96,6 +114,12 @@ function Checkout() {
                 <h1 className="h3 mb-1">Checkout - Paso de pago</h1>
                 <p className="text-muted mb-0">Ingresa tus datos y selecciona la opción de entrega</p>
             </header>
+
+            {errorCompra && (
+                <div className="alert alert-danger" role="alert">
+                    {errorCompra}. <Link to="/carrito" className="alert-link">Revisar carrito</Link>
+                </div>
+            )}
 
             <div className="row g-4">
                 <div className="col-12 col-lg-8">

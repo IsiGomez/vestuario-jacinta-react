@@ -128,6 +128,10 @@ export function obtenerProductoPorId(id) {
     return obtenerProductos().find((p) => p.id === Number(id)) ?? null
 }
 
+export const disponiblesPrimero = (productos) =>
+    [...productos].sort((a, b) => Number(a.stock <= 0) - Number(b.stock <= 0))
+
+
 export function obtenerProductosCriticos() {
     return obtenerProductos().filter((p) => p.stock <= p.stockCritico)
 }
@@ -168,6 +172,49 @@ export function eliminarProducto(id) {
   persistir(CLAVE, filtrados)
   
   return true
+}
+
+
+export class StockInsuficienteError extends Error {}
+
+
+function agruparPorProducto(items) {
+    const total = new Map()
+
+    for (const { productoId, cantidad } of items) {
+        total.set(productoId, (total.get(productoId) ?? 0) + cantidad)
+    }
+
+    return total
+}
+
+
+export function descontarStock(items) {
+    const productos = obtenerProductos()
+    const pedido = agruparPorProducto(items)
+
+    for (const [id, cantidad] of pedido) {
+        const producto = productos.find((p) => p.id === id)
+
+        if (!producto) throw new StockInsuficienteError('Un producto de tu carrito ya no está disponible')
+        if (producto.stock < cantidad) {
+            throw new StockInsuficienteError(
+                producto.stock === 0
+                    ? `"${producto.nombre}" está agotado`
+                    : `Solo quedan ${producto.stock} unidades de "${producto.nombre}"`
+            )
+        }
+    }
+
+    persistir(CLAVE, productos.map((p) => (pedido.has(p.id) ? { ...p, stock: p.stock - pedido.get(p.id) } : p)))
+}
+
+
+export function reponerStock(items) {
+    const productos = obtenerProductos()
+    const devuelto = agruparPorProducto(items)
+
+    persistir(CLAVE, productos.map((p) => (devuelto.has(p.id) ? { ...p, stock: p.stock + devuelto.get(p.id) } : p)))
 }
 
 

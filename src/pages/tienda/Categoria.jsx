@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { obtenerCategorias } from '../../data/categorias'
-import { obtenerProductos } from '../../data/productos'
+import { obtenerProductos, disponiblesPrimero } from '../../data/productos'
+import TarjetaProducto from '../../components/TarjetaProducto'
 
 function Categoria() {
     const { categoria } = useParams()
@@ -8,9 +9,6 @@ function Categoria() {
     const categorias = obtenerCategorias()
     const categoriaEncontrada = categorias.find(
         (c) => c.nombre.toLowerCase() === nombreCategoria.toLowerCase()
-    )
-    const productos = obtenerProductos().filter(
-        (p) => categoriaEncontrada && p.categoriaId === categoriaEncontrada.id && p.stock > 0
     )
 
     if (!categoriaEncontrada) {
@@ -21,6 +19,10 @@ function Categoria() {
             </div>
         )
     }
+
+    const productos = disponiblesPrimero(
+        obtenerProductos().filter((p) => p.categoriaId === categoriaEncontrada.id)
+    )
 
     return (
         <div className="container py-4">
@@ -38,42 +40,11 @@ function Categoria() {
                 <div className="alert alert-info">No hay productos disponibles en esta categoría.</div>
             ) : (
                 <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-                    {productos.map((producto) => {
-                        const color = producto.colores?.[0]
-                        const imagen = color?.imagenes?.[0]
-                        return (
-                            <div className="col" key={producto.id}>
-                                <div className="card h-100 shadow-sm">
-                                    {imagen && (
-                                        <Link to={`/productos/${producto.id}`} className="text-decoration-none">
-                                            <img
-                                                src={imagen}
-                                                alt={producto.nombre}
-                                                className="card-img-top"
-                                                style={{ objectFit: 'cover', height: '280px' }}
-                                            />
-                                        </Link>
-                                    )}
-                                    <div className="card-body d-flex flex-column">
-                                        <h5 className="card-title mb-1">
-                                            <Link to={`/productos/${producto.id}`} className="text-dark text-decoration-none">
-                                                {producto.nombre}
-                                            </Link>
-                                        </h5>
-                                        <p className="text-muted small mb-2">
-                                            {producto.genero} · {producto.tallas?.join(' / ')}
-                                        </p>
-                                        <div className="mt-auto">
-                                            <p className="fw-bold mb-2">${producto.precio?.toLocaleString('es-CL')}</p>
-                                            <Link to={`/productos/${producto.id}`} className="btn btn-primary w-100">
-                                                Ver detalle
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    })}
+                    {productos.map((producto) => (
+                        <div className="col" key={producto.id}>
+                            <TarjetaProducto producto={producto} />
+                        </div>
+                    ))}
                 </div>
             )}
         </div>

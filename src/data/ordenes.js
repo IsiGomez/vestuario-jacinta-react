@@ -1,8 +1,11 @@
 import { leer, guardar, siguienteId, persistir } from '../utils/storage'
+import { descontarStock, reponerStock } from './productos'
 
 const CLAVE = 'jacinta_ordenes'
 
 export const ESTADOS_ORDEN = ['Pagada', 'Pago fallido', 'Pendiente']
+
+const ESTADOS_QUE_RESERVAN = ['Pendiente', 'Pagada']
 
 const entregaEjemplo = (calle, comuna) => ({
     calle,
@@ -61,6 +64,26 @@ const ordenesIniciales = [
     },
 ]
 
+
+function normalizarOrden(orden) {
+    if (orden.cliente && orden.entrega) return orden
+
+    const d = orden.datosEntrega ?? {}
+    const [nombre = '', ...apellidos] = String(d.nombre ?? '').trim().split(/\s+/)
+
+    return {
+        ...orden,
+        cliente: orden.cliente ?? { nombre, apellidos: apellidos.join(' '), correo: d.correo ?? '' },
+        entrega: orden.entrega ?? {
+            calle: d.direccion ?? '',
+            departamento: '',
+            region: d.region ?? '',
+            comuna: d.comuna ?? '',
+            indicaciones: d.notas ?? '',
+        },
+    }
+}
+
 export const totalOrden = (orden) =>
     orden.items.reduce((suma, item) => suma + item.precio * item.cantidad, 0)
 
@@ -74,7 +97,7 @@ export function obtenerOrdenes() {
         return iniciales
     }
 
-    return guardadas
+    return guardadas.map(normalizarOrden)
 }
 
 export function obtenerOrdenPorId(id) {
@@ -90,7 +113,15 @@ export function obtenerOrdenesDeUsuario(usuario) {
 }
 
 // usuarioId, cliente, entrega, items, estado
-export function crearOrden(datos) {
+export function crearOrden(datos, { reservarStock = false } = {}) {
+    if (!datos.cliente || !datos.entrega || !Array.isArray(datos.items) || datos.items.length === 0) {
+        throw new Error('La orden debe incluir cliente, entrega e items')
+    }
+
+    const reserva = reservarStock && ESTADOS_QUE_RESERVAN.includes(datos.estado ?? 'Pagada')
+
+    if (reserva) descontarStock(datos.items)
+
     const ordenes = obtenerOrdenes()
     const id = siguienteId(ordenes)
     const fecha = new Date()
@@ -102,6 +133,8 @@ export function crearOrden(datos) {
         id,
         numero: `${dia}${String(id).padStart(2, '0')}`,
         fecha: fecha.toISOString(),
+        // true = la orden tiene stock apartado. Las órdenes sin este campo nunca tocan el stock.
+        ...(reserva ? { stockReservado: true } : {}),
     }
 
     persistir(CLAVE, [...ordenes, nueva])
@@ -114,8 +147,22 @@ export function actualizarEstadoOrden(id, nuevoEstado) {
     const indice = ordenes.findIndex((o) => o.id === Number(id))
     
     if (indice === -1) return null
-    
-    const actualizada = { ...ordenes[indice], estado: nuevoEstado }
+
+    if (!ESTADOS_ORDEN.includes(nuevoEstado)) throw new Error('Estado de orden no válido')
+
+    const orden = ordenes[indice]
+    const debeReservar = ESTADOS_QUE_RESERVAN.includes(nuevoEstado)
+    const cambios = { estado: nuevoEstado }
+
+    if (orden.stockReservado === true && !debeReservar) {
+        reponerStock(orden.items)
+        cambios.stockReservado = false
+    } else if (orden.stockReservado === false && debeReservar) {
+        descontarStock(orden.items)
+        cambios.stockReservado = true
+    }
+
+    const actualizada = { ...orden, ...cambios }
     const copia = [...ordenes]
     
     copia[indice] = actualizada
