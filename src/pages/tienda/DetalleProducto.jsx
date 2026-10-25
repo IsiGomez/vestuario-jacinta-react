@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { obtenerProductoPorId } from '../../data/productos'
+import { useCarrito } from '../../context/CarritoContext'
 
 function DetalleProducto() {
     const { id } = useParams()
     const producto = obtenerProductoPorId(id)
+    const { agregarProducto } = useCarrito()
 
     const [colorSeleccionado, setColorSeleccionado] = useState(0)
     const [tallaSeleccionada, setTallaSeleccionada] = useState(null)
@@ -164,7 +166,14 @@ function DetalleProducto() {
                     <button 
                         className="btn btn-primary btn-lg w-100" 
                         disabled={producto.stock === 0}
-                        onClick={() => alert('Carrito todavia no implementado')}
+                        onClick={() => {
+                            if (tallas.length > 0 && !tallaSeleccionada) {
+                                alert('Selecciona una talla')
+                                return
+                            }
+                            agregarProducto(producto, 1, tallaSeleccionada, colorActual)
+                            alert('Producto agregado al carrito')
+                        }}
                     >
                         {producto.stock > 0 ? 'Agregar al carrito' : 'Sin stock'}
                     </button>
