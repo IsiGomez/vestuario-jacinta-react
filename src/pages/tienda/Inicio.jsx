@@ -68,8 +68,6 @@ function Inicio() {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </>
     )
 }
