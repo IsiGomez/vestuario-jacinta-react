@@ -9,14 +9,14 @@ function Inicio() {
 
     return (
         <>
-            <section className="py-5" style={{ background: 'linear-gradient(135deg, #f4efea 0%, #ffffff 100%)' }}>
-                <div className="container text-center py-4">
+            <section className="pt-5 pb-4" style={{ background: 'linear-gradient(135deg, #f4efea 0%, #ffffff 100%)' }}>
+                <div className="container text-center pt-4 pb-2">
                     <h1 className="display-3 fw-bold mb-3" style={{ fontFamily: 'Playfair Display, serif' }}>Vestuario Jacinta</h1>
-                    <p className="lead text-muted mb-4">Tu clóset ideal para cada momento, desde 1956.</p>
+                    <p className="lead text-muted mb-0">Tu clóset ideal para cada momento, desde 1956.</p>
                 </div>
             </section>
 
-            <section className="container py-5">
+            <section className="container pt-3 pb-5">
                 <header className="text-center mb-5">
                     <h2 className="h3 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>Descubre nuestras novedades</h2>
                     <p className="text-muted mb-0">Vuelta de stock y nueva colección</p>
