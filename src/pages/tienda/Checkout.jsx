@@ -15,10 +15,11 @@ function Checkout() {
     const { usuario } = useAuth()
     const navigate = useNavigate()
 
+    const nombreCompleto = usuario ? [usuario.nombre, usuario.apellidos].filter(Boolean).join(' ') : ''
+
     const [datos, setDatos] = useState({
-        nombre: usuario?.nombre || '',
+        nombre: nombreCompleto || usuario?.nombre || '',
         correo: usuario?.correo || '',
-        telefono: usuario?.telefono || '',
         direccion: usuario?.direccion || '',
         region: usuario?.region || '',
         comuna: usuario?.comuna || '',
@@ -50,7 +51,6 @@ function Checkout() {
         if (!datos.nombre.trim()) nuevosErrores.nombre = 'Ingresa tu nombre'
         if (!datos.correo.trim()) nuevosErrores.correo = 'Ingresa tu correo'
         else if (!/\S+@\S+\.\S+/.test(datos.correo)) nuevosErrores.correo = 'Correo inválido'
-        if (!datos.telefono.trim()) nuevosErrores.telefono = 'Ingresa tu teléfono'
         if (datos.entrega === 'domicilio') {
             if (!datos.direccion.trim()) nuevosErrores.direccion = 'Ingresa tu dirección'
             if (!datos.region.trim()) nuevosErrores.region = 'Ingresa tu región'
@@ -113,11 +113,6 @@ function Checkout() {
                                         <label className="form-label">Correo electrónico</label>
                                         <input type="email" className={`form-control ${errores.correo ? 'is-invalid' : ''}`} name="correo" value={datos.correo} onChange={cambiar} />
                                         {errores.correo && <div className="invalid-feedback">{errores.correo}</div>}
-                                    </div>
-                                    <div className="col-12 col-md-6">
-                                        <label className="form-label">Teléfono</label>
-                                        <input type="tel" className={`form-control ${errores.telefono ? 'is-invalid' : ''}`} name="telefono" value={datos.telefono} onChange={cambiar} />
-                                        {errores.telefono && <div className="invalid-feedback">{errores.telefono}</div>}
                                     </div>
                                 </div>
                             </div>
