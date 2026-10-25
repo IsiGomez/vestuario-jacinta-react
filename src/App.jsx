@@ -1,11 +1,14 @@
 import { AuthProvider } from './context/AuthProvider'
+import { CarritoProvider } from './context/CarritoContext'
 import { router } from './routes/Router'
 import { RouterProvider } from 'react-router-dom'
 
 function App() {  
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
+      <CarritoProvider>
+        <RouterProvider router={router} />
+      </CarritoProvider>
     </AuthProvider>
   )
 }

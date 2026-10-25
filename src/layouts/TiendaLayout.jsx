@@ -1,10 +1,13 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { Container, Nav, Navbar } from 'react-bootstrap'
+import { Container, Nav, Navbar, Badge } from 'react-bootstrap'
 import { useAuth } from '../hooks/useAuth'
+import { useCarrito } from '../context/CarritoContext'
 
 
 function TiendaLayout() {
     const { usuario, esAdmin, cerrarSesion } = useAuth()
+    const { obtenerCantidadTotal } = useCarrito()
+    const cantidadCarrito = obtenerCantidadTotal()
 
     return (
         <>
@@ -30,7 +33,8 @@ function TiendaLayout() {
                         </Nav>
                         <Nav>
                             <Nav.Link as={NavLink} to="/carrito">
-                                <i className="bi bi-cart3" /> Carrito
+                                <i className="bi bi-cart3" /> Carrito{' '}
+                                {cantidadCarrito > 0 && <Badge bg="light" text="dark">{cantidadCarrito}</Badge>}
                             </Nav.Link>
                             {usuario ? (
                                 <>
