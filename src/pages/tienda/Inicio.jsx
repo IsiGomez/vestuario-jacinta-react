@@ -27,7 +27,7 @@ function Inicio() {
                             <div className="card-body text-center p-4">
                                 <h3 className="h5 mb-3">Vuelta de stock</h3>
                                 <video controls className="w-100 rounded">
-                                    <source src="/assets/video/back-stock.mp4" type="video/mp4" />
+                                    <source src="${import.meta.env.BASE_URL}assets/video/back-stock.mp4" type="video/mp4" />
                                     Tu navegador no soporta la reproducción de este video.
                                 </video>
                             </div>
@@ -38,7 +38,7 @@ function Inicio() {
                             <div className="card-body text-center p-4">
                                 <h3 className="h5 mb-3">Nueva colección</h3>
                                 <video controls className="w-100 rounded">
-                                    <source src="/assets/video/new-collection.mp4" type="video/mp4" />
+                                    <source src="${import.meta.env.BASE_URL}assets/video/new-collection.mp4" type="video/mp4" />
                                     Tu navegador no soporta la reproducción de este video.
                                 </video>
                             </div>
