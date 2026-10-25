@@ -1,0 +1,60 @@
+.auth-pagina {
+  padding: 3rem 0;
+}
+
+.auth-tarjeta {
+  background-color: white;
+  border-top: 4px solid var(--jc-rojo);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(var(--jc-azul-rgb), 0.08);
+
+  --bs-body-bg: white;
+  --bs-border-color: rgba(var(--jc-azul-rgb), 0.35);
+}
+
+.auth-tarjeta-estrecha {
+  max-width: 28rem;
+}
+
+.auth-tarjeta-ancha {
+  max-width: 28rem;
+}
+@media (min-width: 768px) {
+  .auth-tarjeta-ancha {
+    max-width: 45rem;
+  }
+}
+
+.auth-titulo {
+  font-family: var(--jc-fuente-titulo);
+  font-weight: 700;
+  color: var(--jc-azul);
+}
+.auth-subtitulo {
+  color: var(--jc-texto-suave);
+}
+
+.auth-pie {
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--jc-texto-suave);
+}
+
+.btn-auth {
+  background-color: white;
+  border: 3px solid var(--jc-rosa);
+  color: var(--jc-rosa);
+}
+.btn-auth:hover,
+.btn-auth:focus-visible {
+  background-color: color-mix(in srgb, var(--jc-rosa), black 0%);
+  border-color: color-mix(in srgb, var(--jc-rosa), black 20%);
+}
+
+.btn-auth:active {
+  background-color: color-mix(in srgb, var(--jc-rosa), black 10%) !important;
+  border-color: color-mix(in srgb, var(--jc-rojo), black 25%) !important;
+}
