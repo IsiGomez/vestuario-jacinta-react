@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useCarrito } from '../../context/CarritoContext'
 import { useAuth } from '../../hooks/useAuth'
 import { crearOrden } from '../../data/ordenes'
+import RegionComunaSelect from '../../components/RegionComunaSelect'
 
 const OPCIONES_ENTREGA = [
     { id: 'domicilio', nombre: 'Despacho a domicilio', costo: 0 },
@@ -151,15 +152,20 @@ function Checkout() {
                                             <input type="text" className={`form-control ${errores.direccion ? 'is-invalid' : ''}`} name="direccion" value={datos.direccion} onChange={cambiar} />
                                             {errores.direccion && <div className="invalid-feedback">{errores.direccion}</div>}
                                         </div>
-                                        <div className="col-12 col-md-6">
-                                            <label className="form-label">Región</label>
-                                            <input type="text" className={`form-control ${errores.region ? 'is-invalid' : ''}`} name="region" value={datos.region} onChange={cambiar} />
-                                            {errores.region && <div className="invalid-feedback">{errores.region}</div>}
-                                        </div>
-                                        <div className="col-12 col-md-6">
-                                            <label className="form-label">Comuna</label>
-                                            <input type="text" className={`form-control ${errores.comuna ? 'is-invalid' : ''}`} name="comuna" value={datos.comuna} onChange={cambiar} />
-                                            {errores.comuna && <div className="invalid-feedback">{errores.comuna}</div>}
+                                        <div className="col-12">
+                                            <RegionComunaSelect
+                                                region={datos.region}
+                                                comuna={datos.comuna}
+                                                onChange={({ region, comuna }) => {
+                                                    setDatos((prev) => ({ ...prev, region, comuna }))
+                                                    setErrores((prev) => ({ ...prev, region: '', comuna: '' }))
+                                                }}
+                                            />
+                                            {(errores.region || errores.comuna) && (
+                                                <div className="text-danger small mt-2">
+                                                    {errores.region || errores.comuna}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}
