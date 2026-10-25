@@ -1,0 +1,32 @@
+.footer {
+  width: var(--jc-ancho-pantalla);
+  margin-left: var(--jc-margen-pantalla);
+  background-color: var(--jc-durazno);
+  color: var(--jc-azul);
+}
+
+.footer .footer-bloque {
+  background-color: color-mix(in srgb, var(--jc-durazno), black 6%);
+  padding: 1.5rem 1rem;
+}
+
+.footer h5 {
+  font-family: var(--jc-fuente-titulo);
+  font-weight: 700;
+  color: var(--jc-azul);
+}
+
+.footer .footer-redes a {
+  color: var(--jc-verde);
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.footer .footer-redes a:hover {
+  color: var(--jc-verde-oscuro);
+}
+
+.footer hr {
+  border-color: var(--jc-azul);
+  opacity: 0.25;
+}

@@ -1,0 +1,67 @@
+.producto {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  background-color: var(--jc-blanco);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px color-mix(in srgb, black 5%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.producto:hover,
+.producto:focus-within {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 24px color-mix(in srgb, black 12%, transparent);
+}
+
+.producto-imagen {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.producto-imagen img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.producto-nombre {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.5rem 0 0.25rem;
+}
+.producto-nombre a {
+  color: var(--jc-texto);
+  text-decoration: none;
+}
+.producto-info {
+  font-size: 0.85rem;
+  color: var(--jc-texto-suave);
+  margin-bottom: 0.5rem;
+}
+.producto-precio {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--jc-texto-suave);
+  margin-bottom: 0.9rem;
+}
+ 
+.producto-agotado .producto-imagen img {
+  opacity: 0.6;
+}
+ 
+@media (prefers-reduced-motion: reduce) {
+  .producto {
+    transition: none;
+  }
+  .producto:hover,
+  .producto:focus-within {
+    transform: none;
+  }
+}

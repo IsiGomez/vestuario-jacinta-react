@@ -1,41 +1,36 @@
 import { Link } from 'react-router-dom'
 
-function TarjetaProducto({ producto }) {
+function TarjetaProducto({ producto, mostrarStock = false }) {
     const imagen = producto.colores?.[0]?.imagenes?.[0]
     const agotado = producto.stock <= 0
     const ruta = `/productos/${producto.id}`
 
     return (
-        <div className="card shadow-sm">
+        <div className={`producto${agotado ? ' producto-agotado' : ''}`}>
             {imagen && (
-                <Link to={ruta}>
-                    <img
-                        src={imagen}
-                        alt={producto.nombre}
-                        className="card-img-top"
-                    />
+                <Link to={ruta} className="producto-imagen">
+                    <img src={imagen} alt={producto.nombre} />
                     {agotado && <span className="badge bg-dark position-absolute start-0 m-2">Agotado</span>}
+                    {mostrarStock && !agotado && (
+                        <span className="badge bg-danger position-absolute end-0 m-2">¡Quedan {producto.stock}!</span>
+                    )}
                 </Link>
             )}
-            <div className="card-body d-flex flex-column">
-                <h5 className="card-title mb-1">
-                    <Link to={ruta} className="text-dark text-decoration-none">
-                        {producto.nombre}
-                    </Link>
-                </h5>
-                <p className="text-muted small mb-2">
-                    {producto.genero} · {producto.tallas?.join(' / ')}
-                </p>
-                <div className="mt-auto">
-                    <div className="mb-2">
-                        <p className="fw-bold mb-0">${producto.precio?.toLocaleString('es-CL')}</p>
-                        {agotado && !imagen && <span className="badge bg-dark">Agotado</span>}
-                    </div>
-                    <Link to={ruta} className={`btn w-100 ${agotado ? 'btn-outline-secondary' : 'btn-primary'}`}>
-                        Ver detalle
-                    </Link>
-                </div>
-            </div>
+            
+            <h3 className="producto-nombre">
+                <Link to={ruta}>{producto.nombre}</Link>
+            </h3>
+            <p className="producto-info">
+                {producto.genero} · {producto.tallas?.join(' / ')}
+            </p>
+            <p className="producto-precio">${producto.precio?.toLocaleString('es-CL')}</p>
+            {agotado && !imagen && <span className="badge bg-dark mb-2">Agotado</span>}
+            <Link
+                to={ruta}
+                className={`btn w-100 mt-auto stretched-link ${agotado ? 'btn-outline-secondary' : 'btn-primary btn-tienda'}`}
+            >
+                Ver detalle
+            </Link>
         </div>
     )
 }
