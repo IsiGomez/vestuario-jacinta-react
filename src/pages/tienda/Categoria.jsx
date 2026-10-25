@@ -27,7 +27,7 @@ function Categoria() {
     return (
         <div className="container py-4">
             <nav className="mb-3">
-                <Link to="/categorias" className="text-decoration-none">&larr; Volver a categorías</Link>
+                <Link to="/categorias" className="text-decoration-none">« Volver a categorías</Link>
             </nav>
             <header className="mb-4">
                 <h1 className="h2 mb-1">{categoriaEncontrada.nombre}</h1>
