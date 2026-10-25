@@ -1,5 +1,6 @@
 import PaginaPendiente from '../components/PaginaPendiente'
-import LoginTemporal from '../pages/pruebas/LoginTemporal'
+import Login from '../pages/tienda/Login'
+import Registro from '../pages/tienda/Registro'
 
 const rutasTienda = [
     { 
@@ -45,11 +46,11 @@ const rutasTienda = [
 
     { 
         path: 'login', 
-        element: <LoginTemporal /> 
+        element: <Login /> 
     },
     { 
         path: 'registro', 
-        element: <PaginaPendiente titulo="Registro de usuario" /> 
+        element: <Registro /> 
     },
     { 
         path: 'carrito', 
