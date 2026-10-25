@@ -16,7 +16,7 @@ function validar(datos) {
     if (!correoLimpio) errores.correo = 'El correo es obligatorio.'
     else if (correoLimpio.length > 100) errores.correo = 'El correo no puede tener más de 100 caracteres.'
     else if (!regexCorreo.test(correoLimpio)) errores.correo = 'Solo se aceptan correos @duoc.cl, @profesor.duoc.cl o @gmail.com.'
-    else if (correoLimpio === "vestuariojacinta@gmail.com") errores.correo = "Debes escribir tu correo, no el de la empresa."
+    else if (correoLimpio.toLowerCase() === "vestuariojacinta@gmail.com") errores.correo = "Debes escribir tu correo, no el de la empresa."
 
     const mensajeLimpio = datos.mensaje.trim()
     if (!mensajeLimpio) errores.mensaje = 'El mensaje es obligatorio.'
