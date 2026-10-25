@@ -64,17 +64,12 @@ function Contacto() {
                     Envíanos tus consultas y recomendaciones
                 </p>
 
-                {enviado && (
-                    <div className="alert alert-success text-center" role="alert">
-                        ¡Gracias! Tu mensaje fue enviado correctamente.
-                    </div>
-                )}
 
                 <div className="d-flex flex-column gap-3 mb-4">
                     <div 
                         className="d-flex align-items-center gap-2 gap-md-3 p-3 p-md-4 rounded-4 w-100" 
                         style={{ backgroundColor: 'var(--jc-durazno)', color: 'var(--jc-azul)' }}
-                    >
+                        >
                         <i className="bi bi-telephone-fill fs-4 fs-md-3 flex-shrink-0"></i>
                         <div className="d-flex flex-column text-start">
                             <span className="fw-bold text-uppercase mb-1 small">Llámanos al</span>
@@ -82,7 +77,7 @@ function Contacto() {
                                 href="tel:+56934563452" 
                                 className="text-decoration-none fw-semibold fs-6 fs-md-5 text-break" 
                                 style={{ color: 'var(--jc-azul)' }}
-                            >
+                                >
                                 +56 9 3456 3452
                             </a>
                         </div>
@@ -91,7 +86,7 @@ function Contacto() {
                     <div 
                         className="d-flex align-items-center gap-2 gap-md-3 p-3 p-md-4 rounded-4 w-100" 
                         style={{ backgroundColor: 'var(--jc-durazno)', color: 'var(--jc-azul)' }}
-                    >
+                        >
                         <i className="bi bi-envelope-fill fs-4 fs-md-3 flex-shrink-0"></i>
                         <div className="d-flex flex-column text-start">
                             <span className="fw-bold text-uppercase mb-1 small">Escríbenos a</span>
@@ -99,7 +94,7 @@ function Contacto() {
                                 href="mailto:vestuariojacinta@gmail.com" 
                                 className="text-decoration-none fw-semibold fs-6 fs-md-5 text-break" 
                                 style={{ color: 'var(--jc-azul)' }}
-                            >
+                                >
                                 vestuariojacinta@gmail.com
                             </a>
                         </div>
@@ -119,7 +114,7 @@ function Contacto() {
                         error={errores.nombre}
                         onChange={cambiar}
                         placeholder="Tu nombre completo"
-                    />
+                        />
                     <Campo
                         etiqueta="Correo electrónico"
                         nombre="correo"
@@ -128,7 +123,7 @@ function Contacto() {
                         error={errores.correo}
                         onChange={cambiar}
                         placeholder="ejemplo@duoc.cl"
-                    />
+                        />
                     <Campo
                         etiqueta="Mensaje"
                         nombre="mensaje"
@@ -138,7 +133,7 @@ function Contacto() {
                         onChange={cambiar}
                         rows="4"
                         placeholder="Escribe tu consulta o recomendación..."
-                    />
+                        />
                     
                     <div className="d-flex gap-2 mt-3">
                         <button type="submit" className="btn btn-auth btn-primary flex-fill">
@@ -146,9 +141,14 @@ function Contacto() {
                         </button>
                         <button type="button" className="btn btn-outline-secondary flex-fill" onClick={limpiar}>
                             Limpiar campos
-                        </button>
+                    </button>
                     </div>
                 </form>
+                {enviado && (
+                    <div className="alert alert-success text-center my-2" role="alert">
+                        ¡Gracias! Tu mensaje fue enviado correctamente.
+                    </div>
+                )}
             </div>
         </div>
     )
