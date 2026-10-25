@@ -14,7 +14,9 @@
 }
 
 .titulo-video {
-  display: inline-block;
+  display: block;
+  width: fit-content;
+  margin-inline: auto;
   background-color: color-mix(in srgb, var(--jc-rojo) 25%, transparent);
   color: var(--jc-azul);
   border-radius: 999px;

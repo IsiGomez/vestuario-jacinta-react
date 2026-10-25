@@ -1,9 +1,9 @@
 video {
-    max-width: 92%;
+    max-width: 75%;
     border-radius: 10px;
 }
-@media (max-width: 920px) and (min-width:763px) {
+@media (max-width: 920px) and (min-width:768px) {
   video {
-    max-width: 75%;
+    max-width: 60%;
   }
 }
