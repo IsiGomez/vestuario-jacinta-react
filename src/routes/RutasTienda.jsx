@@ -1,45 +1,57 @@
 import PaginaPendiente from '../components/PaginaPendiente'
 import Login from '../pages/tienda/Login'
 import Registro from '../pages/tienda/Registro'
+import Productos from '../pages/tienda/Productos'
+import DetalleProducto from '../pages/tienda/DetalleProducto'
+import Inicio from '../pages/tienda/Inicio'
+import Carrito from '../pages/tienda/Carrito'
+import Nosotros from '../pages/tienda/Nosotros'
+import Contacto from '../pages/tienda/Contacto'
+import Blog from '../pages/tienda/Blog'
+import DetalleBlog from '../pages/tienda/DetalleBlog'
+import Categoria from '../pages/tienda/Categoria'
+import Categorias from '../pages/tienda/Categorias'
+import Ofertas from '../pages/tienda/Ofertas'
 
 const rutasTienda = [
     { 
         index: true, 
-        element: <PaginaPendiente titulo="Home" /> 
+        element: <Inicio /> 
     },
     {
         path: 'productos', 
-        element: <PaginaPendiente titulo="Productos" /> 
+        element: <Productos /> 
     },
     {
         path: 'productos/:id', 
-        element: <PaginaPendiente titulo="Detalle de producto" /> },
+        element: <DetalleProducto /> 
+    },
     { 
         path: 'categorias', 
-        element: <PaginaPendiente titulo="Categorías" /> },
+        element: <Categorias /> },
     { 
         path: 'categorias/:categoria', 
-        element: <PaginaPendiente titulo="Categoría" /> 
+        element: <Categoria /> 
     },
     { 
         path: 'ofertas', 
-        element: <PaginaPendiente titulo="Ofertas" /> 
+        element: <Ofertas /> 
     },
     { 
         path: 'nosotros', 
-        element: <PaginaPendiente titulo="Nosotros" /> 
+        element: <Nosotros /> 
     },
     { 
         path: 'blog', 
-        element: <PaginaPendiente titulo="Blog" /> 
+        element: <Blog /> 
     },
     { 
         path: 'blog/:id', 
-        element: <PaginaPendiente titulo="Detalle de blog" /> 
+        element: <DetalleBlog /> 
     },
     { 
         path: 'contacto', 
-        element: <PaginaPendiente titulo="Contacto" /> 
+        element: <Contacto /> 
     },
 
 
@@ -54,7 +66,7 @@ const rutasTienda = [
     },
     { 
         path: 'carrito', 
-        element: <PaginaPendiente titulo="Carrito de compra" /> 
+        element: <Carrito /> 
     },
     { 
         path: 'checkout', 
