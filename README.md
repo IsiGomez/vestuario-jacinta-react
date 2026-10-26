@@ -23,10 +23,10 @@ Basado en el caso **"Vestuarios Jacinta"**: una tienda chilena de ropa casual y 
 ## Descripción
 
 El proyecto corresponde al **frontend** de la tienda Jacinta de vestuario, desarrollado con **React** y **Bootstrap**. No tiene backend: una capa de datos en JavaScript simula la base de datos (con operaciones CRUD) y guarda la información en `localStorage`.
+ 
+Incluye la **tienda pública** (home, catálogo, categorías, carrito, checkout, blog, registro e inicio de sesión) y un **panel de administración** completo (productos, categorías, usuarios, órdenes, reportes).
 
-Incluye un **panel de administración** completo (productos, categorías, usuarios, órdenes, reportes) y la estructura de navegación de la tienda pública.
-
-> **Estado actual:** el panel de administración está terminado. Las vistas públicas de la tienda (home, catálogo, carrito, checkout, etc.) tienen sus rutas creadas y están en desarrollo.
+> **Estado actual:** tanto el panel de administración como las vistas de la tienda están implementados, incluido el flujo completo de compra (carrito → checkout → compra exitosa o con error).
 
 ## Tecnologías utilizadas
 
@@ -71,7 +71,7 @@ La aplicación queda disponible en `http://localhost:5173`.
 Inicia sesión en `/login` y entra al panel desde **Panel admin** en la barra de navegación (o en `/admin`).
 
 ## Estructura del proyecto
-
+ 
 ```
 vestuario-jacinta-react/
 ├── index.html
@@ -79,22 +79,31 @@ vestuario-jacinta-react/
 ├── public/assets/          # Logo, íconos, imágenes de productos y blog, videos
 └── src/
     ├── main.jsx / App.jsx
-    ├── components/          # Campo, InputRun, RegionComunaSelect, TarjetaResumen, MiniaturaImagen…
-    ├── context/             # AuthProvider (sesión)
+    ├── components/          # EncabezadoPagina, TarjetaProducto, Campo, InputRun, RegionComunaSelect, TarjetaResumen, MiniaturaImagen, Footer…
+    ├── context/             # AuthProvider (sesión) y CarritoContext (carrito)
     ├── hooks/               # useAuth
     ├── layouts/             # TiendaLayout y AdminLayout
     ├── routes/              # Router, rutas de tienda y admin, RutaProtegida
     ├── pages/
     │   ├── admin/           # Dashboard, productos, categorías, usuarios, órdenes, reportes, perfil
-    │   ├── tienda/          # Vistas públicas (en desarrollo)
+    │   ├── tienda/          # Vistas públicas: inicio, productos, categorías, carrito, checkout, blog, contacto…
     │   └── pruebas/         # Páginas auxiliares de desarrollo
-    ├── data/                # Datos simulados con CRUD: productos, categorías, usuarios, órdenes, regiones/comunas
+    ├── data/                # Datos simulados con CRUD: productos, categorías, usuarios, órdenes, blogs, regiones/comunas
     ├── utils/               # validaciones, formato, reportes y storage
     ├── styles/              # base, layouts, components, pages
     └── test/                # setup y pruebas unitarias
 ```
 
 ## Funcionalidades implementadas
+ 
+**Tienda pública**
+- **Inicio** con banner, videos de novedades y los productos con menor stock
+- **Productos** y **detalle de producto** (selección de color y talla), y **categorías** con su listado de productos
+- **Carrito** persistente (por usuario o invitado) con control de cantidades respetando el stock disponible
+- **Checkout** con datos de entrega y envío, y vistas de **compra exitosa** y **compra con error**
+- **Blog** con detalle de artículos, **Nosotros** y **Contacto** (formulario con validación)
+- **Registro** e **inicio de sesión** de clientes
+- Todas las páginas comparten el componente reutilizable `EncabezadoPagina`, que muestra el título y subtítulo de cada vista en un banner
 
 **Panel de administración (`/admin`, solo rol Administrador)**
 - Dashboard con ventas totales, órdenes por estado, gráfico de los últimos 6 meses, productos críticos y más vendidos
@@ -108,30 +117,25 @@ vestuario-jacinta-react/
 **Transversal**
 - Inicio de sesión con contraseñas hasheadas (bcrypt) y rutas protegidas por rol
 - Formularios con validación por campo: RUN chileno (dígito verificador), nombre, apellidos, correo, contraseña, fecha de nacimiento, dirección y selección en cascada Región → Comuna
-- Datos persistentes en `localStorage` (claves `jacinta_productos`, `jacinta_categorias`, `jacinta_usuarios`, `jacinta_ordenes` y `jacinta_sesion`)
+- Datos persistentes en `localStorage` (claves `jacinta_productos`, `jacinta_categorias`, `jacinta_usuarios`, `jacinta_ordenes`, `jacinta_blogs`, `jacinta_sesion` y `jacinta_carrito_*`)
 - Diseño responsivo con Bootstrap (menú colapsable, tablas con scroll horizontal, grillas)
 
-**En desarrollo**
-- Vistas de la tienda: home, productos y detalle, categorías, ofertas, nosotros, blog y contacto
-- Carrito, checkout y vistas de compra exitosa / con error
-- Registro de usuarios
-
-## Pruebas unitarias
-
-Se usa **Vitest** con **React Testing Library** (`describe`, `it`, `expect`). La configuración está en `vitest.config.js` y `src/test/setup.js`, que limpia `localStorage`, desmonta los componentes y restaura los mocks entre pruebas.
-
+Se usa **Vitest** con **React Testing Library** (`describe`, `it`, `expect`). Son **27 archivos de prueba y 352 pruebas** que cubren utilidades, capa de datos, componentes y páginas del panel de administración. La configuración está en `vitest.config.js` y `src/test/setup.js`, que limpia `localStorage`, desmonta los componentes y restaura los mocks entre pruebas.
+ 
 ```bash
 npx vitest run
 npx vitest run --coverage
 ```
-
-| Archivo | Pruebas | Qué verifica |
-| :--- | :---: | :--- |
-| `src/test/utils/formato.test.js` | 10 | Formato de precios (CLP), RUN y fechas |
-| `src/test/utils/storage.test.js` | 13 | Lectura, escritura, JSON corrupto, errores de almacenamiento e ids |
-
+ 
+| Carpeta | Archivos | Pruebas | Qué verifica |
+| :--- | :---: | :---: | :--- |
+| `src/test/utils/` | 4 | 107 | Validaciones (RUN, correo, contraseña…), formato de precios/RUN/fechas, reportes y storage |
+| `src/test/data/` | 5 | 103 | CRUD de productos, categorías, usuarios, órdenes y regiones/comunas |
+| `src/test/components/` | 4 | 23 | `InputRun`, `MiniaturaImagen`, `RegionComunaSelect` y `TarjetaResumen` |
+| `src/test/pages/admin/` | 14 | 119 | Dashboard, CRUD, órdenes, boletas, reportes y perfil del panel de administración |
+ 
 ## Paleta de diseño
-
+ 
 | Uso | Muestra | Código |
 | :--- | :---: | :--- |
 | Fondo principal | <img src="https://img.shields.io/badge/-%20-f4efea?style=flat-square" alt="f4efea"> | `#f4efea` |
