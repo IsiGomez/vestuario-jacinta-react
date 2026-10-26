@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { obtenerCategorias } from '../../data/categorias'
 import { obtenerProductos, disponiblesPrimero } from '../../data/productos'
 import TarjetaProducto from '../../components/TarjetaProducto'
+import EncabezadoPagina from '../../components/EncabezadoPagina'
 
 function Categoria() {
     const { categoria } = useParams()
@@ -25,16 +26,11 @@ function Categoria() {
     )
 
     return (
-        <div className="container py-4">
+        <div className="container pb-4">
+            <EncabezadoPagina titulo={categoriaEncontrada.nombre} subtitulo={categoriaEncontrada.descripcion} />
             <nav className="mb-3">
                 <Link to="/categorias" className="text-decoration-none">« Volver a categorías</Link>
             </nav>
-            <header className="mb-4">
-                <h1 className="h2 mb-1">{categoriaEncontrada.nombre}</h1>
-                {categoriaEncontrada.descripcion && (
-                    <p className="text-muted mb-0">{categoriaEncontrada.descripcion}</p>
-                )}
-            </header>
 
             {productos.length === 0 ? (
                 <div className="alert alert-info">No hay productos disponibles en esta categoría.</div>

@@ -1,15 +1,13 @@
 import { Link } from 'react-router-dom'
 import { obtenerCategorias, contarProductosDeCategoria } from '../../data/categorias'
+import EncabezadoPagina from '../../components/EncabezadoPagina'
 
 function Categorias() {
     const categorias = obtenerCategorias()
 
     return (
-        <div className="container py-4">
-            <header className="mb-4">
-                <h1 className="h2 mb-1">Categorías</h1>
-                <p className="text-muted mb-0">Explora nuestros productos por categoría</p>
-            </header>
+        <div className="container pb-4">
+            <EncabezadoPagina titulo="Categorías" subtitulo="Explora nuestros productos por categoría" />
 
             {categorias.length === 0 ? (
                 <div className="alert alert-info">No hay categorías disponibles.</div>

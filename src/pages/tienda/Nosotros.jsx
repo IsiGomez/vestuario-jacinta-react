@@ -1,11 +1,14 @@
+import EncabezadoPagina from '../../components/EncabezadoPagina'
+
 function Nosotros() {
     return (
-        <div className="container py-5">
+        <div className="container pb-5">
+            <EncabezadoPagina titulo="Nosotros" subtitulo="Conoce la historia de Vestuario Jacinta" />
             <section className="mb-5">
                 <div className="p-4 rounded-3 text-center" style={{ backgroundColor: 'var(--jc-durazno)' }}>
-                    <h1 className="h2 mb-3" style={{ fontFamily: 'var(--jc-fuente-titulo)', color: 'var(--jc-azul)' }}>
+                    <h2 className="h2 mb-3" style={{ fontFamily: 'var(--jc-fuente-titulo)', color: 'var(--jc-azul)' }}>
                         Nuestra Historia
-                    </h1>
+                    </h2>
                     <p className="mb-0" style={{ color: 'var(--jc-azul)', textAlign: 'justify', lineHeight: '1.7' }}>
                         En <strong>Vestuario Jacinta</strong>, nos hemos consolidado como un referente del vestuario casual y urbano en Chile. 
                         Con 70 años de trayectoria, acompañamos a nuestros clientes en cada etapa de su vida, ofreciendo prendas modernas, 

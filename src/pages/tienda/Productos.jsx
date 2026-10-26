@@ -1,16 +1,14 @@
 import { useState } from 'react'
 import { obtenerProductos, disponiblesPrimero } from '../../data/productos'
 import TarjetaProducto from '../../components/TarjetaProducto'
+import EncabezadoPagina from '../../components/EncabezadoPagina'
 
 function Productos() {
     const [productos] = useState(() => disponiblesPrimero(obtenerProductos()))
 
     return (
-        <div className="container py-4">
-            <header className="mb-4">
-                <h1 className="h2 mb-1">Productos</h1>
-                <p className="text-muted mb-0">Descubre todas nuestras prendas</p>
-            </header>
+        <div className="container pb-4">
+            <EncabezadoPagina titulo="Productos" subtitulo="Descubre todas nuestras prendas" />
 
             {productos.length === 0 ? (
                 <div className="alert alert-info">No hay productos disponibles.</div>

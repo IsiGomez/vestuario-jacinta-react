@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Campo from '../../components/Campo'
+import EncabezadoPagina from '../../components/EncabezadoPagina'
 
 const VALORES_INICIALES = { nombre: '', correo: '', mensaje: '' }
 
@@ -57,12 +58,10 @@ function Contacto() {
     }
 
     return (
+        <>
+            <EncabezadoPagina titulo="Contacto" subtitulo="Envíanos tus consultas y recomendaciones" />
         <div className="auth-pagina">
             <div className="auth-tarjeta auth-tarjeta-ancha mx-auto">
-                <h1 className="auth-titulo h3 text-center mb-1">Contacto</h1>
-                <p className="auth-subtitulo text-center mb-4">
-                    Envíanos tus consultas y recomendaciones
-                </p>
 
 
                 <div className="d-flex flex-column gap-3 mb-4">
@@ -151,6 +150,7 @@ function Contacto() {
                 )}
             </div>
         </div>
+        </>
     )
 }
 

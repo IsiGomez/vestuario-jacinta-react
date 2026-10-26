@@ -1,16 +1,13 @@
 import { Link } from 'react-router-dom'
 import { obtenerBlogs } from '../../data/blogs'
+import EncabezadoPagina from '../../components/EncabezadoPagina'
 
 function Blog() {
     const blogs = obtenerBlogs()
 
     return (
-        <div className="container py-4">
-            <header className="mb-5 text-center">
-                <h1 className="display-5 fw-bold" style={{ fontFamily: 'var(--jc-fuente-titulo)' }}>Blog</h1>
-                <p className="h5 text-muted mb-1">Noticias y Curiosidades</p>
-                <p className="text-muted">Historias, datos y tendencias de nuestra tienda</p>
-            </header>
+        <div className="container pb-4">
+            <EncabezadoPagina titulo="Blog" subtitulo="Noticias y curiosidades: historias, datos y tendencias de nuestra tienda" />
 
             {blogs.length === 0 ? (
                 <div className="alert alert-info text-center">No hay artículos disponibles en el blog.</div>

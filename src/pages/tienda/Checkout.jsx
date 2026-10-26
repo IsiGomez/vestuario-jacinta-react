@@ -5,6 +5,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { crearOrden } from '../../data/ordenes'
 import { StockInsuficienteError } from '../../data/productos'
 import RegionComunaSelect from '../../components/RegionComunaSelect'
+import EncabezadoPagina from '../../components/EncabezadoPagina'
 
 const OPCIONES_ENTREGA = [
     { id: 'domicilio', nombre: 'Despacho a domicilio', costo: 0 },
@@ -106,14 +107,11 @@ function Checkout() {
     }
 
     return (
-        <div className="container py-4">
+        <div className="container pb-4">
+            <EncabezadoPagina titulo="Checkout - Paso de pago" subtitulo="Ingresa tus datos y selecciona la opción de entrega" />
             <nav className="mb-3">
                 <Link to="/carrito" className="text-decoration-none">&larr; Volver al carrito</Link>
             </nav>
-            <header className="mb-4">
-                <h1 className="h3 mb-1">Checkout - Paso de pago</h1>
-                <p className="text-muted mb-0">Ingresa tus datos y selecciona la opción de entrega</p>
-            </header>
 
             {errorCompra && (
                 <div className="alert alert-danger" role="alert">

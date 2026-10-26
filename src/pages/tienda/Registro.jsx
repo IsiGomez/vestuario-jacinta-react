@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { crearUsuario } from '../../data/usuarios'
 import { useAuth } from '../../hooks/useAuth'
+import EncabezadoPagina from '../../components/EncabezadoPagina'
 import Campo from '../../components/Campo'
 import RegionComunaSelect from '../../components/RegionComunaSelect'
 import {
@@ -107,10 +108,10 @@ function Registro() {
 
 
     return (
+        <>
+            <EncabezadoPagina titulo="Crear cuenta" subtitulo="Regístrate para comprar en Jacinta" />
         <div className="auth-pagina">
             <div className="auth-tarjeta auth-tarjeta-ancha mx-auto">
-                <h1 className="auth-titulo h3 text-center mb-1">Crear cuenta</h1>
-                <p className="auth-subtitulo text-center mb-4">Regístrate para comprar en Jacinta</p>
 
                 {errorGuardado && <div className="alert alert-danger" role="alert">{errorGuardado}</div>}
 
@@ -218,6 +219,7 @@ function Registro() {
                 </p>
             </div>
         </div>
+        </>
     )
 }
 

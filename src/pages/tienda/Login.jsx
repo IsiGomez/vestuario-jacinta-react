@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import Campo from '../../components/Campo'
 import { validarRequerido } from '../../utils/validaciones'
+import EncabezadoPagina from '../../components/EncabezadoPagina'
 
 const VALORES_INICIALES = { correo: '', contrasena: '' }
 
@@ -52,10 +53,10 @@ function Login() {
 
     
     return (
+        <>
+            <EncabezadoPagina titulo="Iniciar sesión" subtitulo="Ingresa para continuar con tu compra" />
         <div className="auth-pagina">
             <div className="auth-tarjeta auth-tarjeta-estrecha mx-auto">
-                <h1 className="auth-titulo h3 text-center mb-1">Iniciar sesión</h1>
-                <p className="auth-subtitulo text-center mb-4">Ingresa para continuar con tu compra</p>
 
                 {errorLogin && <div className="alert alert-danger" role="alert">{errorLogin}</div>}
 
@@ -91,6 +92,7 @@ function Login() {
                 </p>
             </div>
         </div>
+        </>
     )
 }
 

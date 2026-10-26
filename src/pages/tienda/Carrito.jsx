@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useCarrito } from '../../context/CarritoContext'
+import EncabezadoPagina from '../../components/EncabezadoPagina'
 
 function Carrito() {
     const { carrito, quitarCantidad, actualizarCantidad, eliminarProducto, vaciarCarrito, obtenerTotal, disponibleParaAgregar } = useCarrito()
@@ -17,16 +18,13 @@ function Carrito() {
     const total = obtenerTotal()
 
     return (
-        <div className="container py-4">
-            <header className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                <div>
-                    <h1 className="h3 mb-1">Carrito de compras</h1>
-                    <p className="text-muted mb-0">{carrito.length} producto(s) en tu carrito</p>
-                </div>
+        <div className="container pb-4">
+            <EncabezadoPagina titulo="Carrito de compras" subtitulo={`${carrito.length} producto(s) en tu carrito`} />
+            <div className="d-flex justify-content-end mb-3">
                 <button className="btn btn-outline-danger" onClick={vaciarCarrito}>
                     Vaciar carrito
                 </button>
-            </header>
+            </div>
 
             <div className="row g-4">
                 <div className="col-12 col-lg-8">
