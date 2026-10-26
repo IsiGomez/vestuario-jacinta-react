@@ -10,7 +10,7 @@ function Carrito() {
             <div className="container py-5 text-center">
                 <h1 className="h3 mb-3">Tu carrito está vacío</h1>
                 <p className="text-muted mb-4">Agrega productos desde el catálogo para comenzar tu compra</p>
-                <Link to="/productos" className="btn btn-primary">Ir al catálogo</Link>
+                <Link to="/productos" className="btn btn-primary btn-tienda">Ir al catálogo</Link>
             </div>
         )
     }
