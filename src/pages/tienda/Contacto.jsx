@@ -60,96 +60,101 @@ function Contacto() {
     return (
         <>
             <EncabezadoPagina titulo="Contacto" subtitulo="Envíanos tus consultas y recomendaciones" />
-        <div className="auth-pagina">
-            <div className="auth-tarjeta auth-tarjeta-ancha mx-auto">
-
-
-                <div className="d-flex flex-column gap-3 mb-4">
-                    <div 
-                        className="d-flex align-items-center gap-2 gap-md-3 p-3 p-md-4 rounded-4 w-100" 
-                        style={{ backgroundColor: 'var(--jc-durazno)', color: 'var(--jc-azul)' }}
-                        >
-                        <i className="bi bi-telephone-fill fs-4 fs-md-3 flex-shrink-0"></i>
-                        <div className="d-flex flex-column text-start">
-                            <span className="fw-bold text-uppercase mb-1 small">Llámanos al</span>
-                            <a 
-                                href="tel:+56934563452" 
-                                className="text-decoration-none fw-semibold fs-6 fs-md-5 text-break" 
-                                style={{ color: 'var(--jc-azul)' }}
-                                >
-                                +56 9 3456 3452
-                            </a>
+        
+            <div className="auth-pagina">
+                <div className="mx-auto mb-4" style={{ maxWidth: '45rem' }}>
+                    <div className="row g-3">
+                        <div className="col-12 col-md-6">
+                            <div 
+                                className="d-flex align-items-center gap-2 gap-md-3 p-3 p-md-4 rounded-4 h-100" 
+                                style={{ backgroundColor: 'var(--jc-durazno)', color: 'var(--jc-azul)' }}
+                            >
+                                <i className="bi bi-telephone-fill fs-4 fs-md-3 flex-shrink-0"></i>
+                                <div className="d-flex flex-column text-start">
+                                    <span className="fw-bold text-uppercase mb-1 small">Llámanos al</span>
+                                    <a 
+                                        href="tel:+56934563452" 
+                                        className="text-decoration-none fw-semibold fs-6 fs-md-5 text-break" 
+                                        style={{ color: 'var(--jc-azul)' }}
+                                        >
+                                        +56 9 3456 3452
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div 
-                        className="d-flex align-items-center gap-2 gap-md-3 p-3 p-md-4 rounded-4 w-100" 
-                        style={{ backgroundColor: 'var(--jc-durazno)', color: 'var(--jc-azul)' }}
-                        >
-                        <i className="bi bi-envelope-fill fs-4 fs-md-3 flex-shrink-0"></i>
-                        <div className="d-flex flex-column text-start">
-                            <span className="fw-bold text-uppercase mb-1 small">Escríbenos a</span>
-                            <a 
-                                href="mailto:vestuariojacinta@gmail.com" 
-                                className="text-decoration-none fw-semibold fs-6 fs-md-5 text-break" 
-                                style={{ color: 'var(--jc-azul)' }}
-                                >
-                                vestuariojacinta@gmail.com
-                            </a>
+                        
+                        <div className="col-12 col-md-6">
+                            <div 
+                                className="d-flex align-items-center gap-2 gap-md-3 p-3 p-md-4 rounded-4 h-100" 
+                                style={{ backgroundColor: 'var(--jc-durazno)', color: 'var(--jc-azul)' }}
+                            >
+                                <i className="bi bi-envelope-fill fs-4 fs-md-3 flex-shrink-0"></i>
+                                <div className="d-flex flex-column text-start">
+                                    <span className="fw-bold text-uppercase mb-1 small">Escríbenos a</span>
+                                    <a 
+                                        href="mailto:vestuariojacinta@gmail.com" 
+                                        className="text-decoration-none fw-semibold fs-6 fs-md-5 text-break" 
+                                        style={{ color: 'var(--jc-azul)' }}
+                                        >
+                                        vestuariojacinta@gmail.com
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <h2 className="h5 fw-semibold text-center mb-2" style={{ color: 'var(--jc-azul)' }}>
-                    Formulario de contacto
-                </h2>
-                <hr className="mb-4" style={{ borderColor: 'var(--jc-durazno)', opacity: 1, borderWidth: '2px' }} />
+                <div className="auth-tarjeta auth-tarjeta-ancha mx-auto">
+                    <h2 className="h5 fw-semibold text-center mb-2" style={{ color: 'var(--jc-azul)' }}>
+                        Formulario de contacto
+                    </h2>
+                    <hr className="mb-4" style={{ borderColor: 'var(--jc-durazno)', opacity: 1, borderWidth: '2px' }} />
 
-                <form onSubmit={enviar} noValidate>
-                    <Campo
-                        etiqueta="Nombre"
-                        nombre="nombre"
-                        valor={datos.nombre}
-                        error={errores.nombre}
-                        onChange={cambiar}
-                        placeholder="Tu nombre completo"
+                    <form onSubmit={enviar} noValidate>
+                        <Campo
+                            etiqueta="Nombre"
+                            nombre="nombre"
+                            valor={datos.nombre}
+                            error={errores.nombre}
+                            onChange={cambiar}
+                            placeholder="Tu nombre completo"
                         />
-                    <Campo
-                        etiqueta="Correo electrónico"
-                        nombre="correo"
-                        type="email"
-                        valor={datos.correo}
-                        error={errores.correo}
-                        onChange={cambiar}
-                        placeholder="ejemplo@duoc.cl"
+                        <Campo
+                            etiqueta="Correo electrónico"
+                            nombre="correo"
+                            type="email"
+                            valor={datos.correo}
+                            error={errores.correo}
+                            onChange={cambiar}
+                            placeholder="ejemplo@duoc.cl"
                         />
-                    <Campo
-                        etiqueta="Mensaje"
-                        nombre="mensaje"
-                        as="textarea"
-                        valor={datos.mensaje}
-                        error={errores.mensaje}
-                        onChange={cambiar}
-                        rows="4"
-                        placeholder="Escribe tu consulta o recomendación..."
+                        <Campo
+                            etiqueta="Mensaje"
+                            nombre="mensaje"
+                            as="textarea"
+                            valor={datos.mensaje}
+                            error={errores.mensaje}
+                            onChange={cambiar}
+                            rows="4"
+                            placeholder="Escribe tu consulta o recomendación..."
                         />
-                    
-                    <div className="d-flex gap-2 mt-3">
-                        <button type="submit" className="btn btn-auth btn-primary flex-fill">
-                            Enviar mensaje
-                        </button>
-                        <button type="button" className="btn btn-outline-secondary flex-fill" onClick={limpiar}>
-                            Limpiar campos
-                    </button>
-                    </div>
-                </form>
-                {enviado && (
-                    <div className="alert alert-success text-center my-2" role="alert">
-                        ¡Gracias! Tu mensaje fue enviado correctamente.
-                    </div>
-                )}
+                        
+                        <div className="d-flex gap-2 mt-3">
+                            <button type="submit" className="btn btn-auth btn-primary flex-fill">
+                                Enviar mensaje
+                            </button>
+                            <button type="button" className="btn btn-outline-secondary flex-fill" onClick={limpiar}>
+                                Limpiar campos
+                            </button>
+                        </div>
+                    </form>
+                    {enviado && (
+                        <div className="alert alert-success text-center my-2" role="alert">
+                            ¡Gracias! Tu mensaje fue enviado correctamente.
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
         </>
     )
 }
