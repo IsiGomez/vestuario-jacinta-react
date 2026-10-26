@@ -19,7 +19,7 @@ function Carrito() {
 
     return (
         <div className="container pb-4">
-            <EncabezadoPagina titulo="Carrito de compras" subtitulo={`${carrito.length} producto(s) en tu carrito`} />
+            <EncabezadoPagina titulo="Carrito de compras" subtitulo={`${carrito.length} ${carrito.length === 1 ? 'producto' : 'productos'} en tu carrito`} />
             <div className="d-flex justify-content-end mb-3">
                 <button className="btn btn-outline-danger" onClick={vaciarCarrito}>
                     Vaciar carrito
@@ -28,7 +28,7 @@ function Carrito() {
 
             <div className="row g-4">
                 <div className="col-12 col-lg-8">
-                    <div className="card shadow-sm">
+                    <div className="card shadow-sm tarjeta-carrito">
                         <div className="card-body p-0">
                             {carrito.map((item, idx) => {
                                 const subtotal = item.precio * item.cantidad
@@ -89,7 +89,7 @@ function Carrito() {
                 </div>
 
                 <div className="col-12 col-lg-4">
-                    <div className="card shadow-sm">
+                    <div className="card shadow-sm tarjeta-carrito">
                         <div className="card-body">
                             <h5 className="card-title mb-3">Resumen de compra</h5>
                             <div className="d-flex justify-content-between mb-2">
@@ -105,7 +105,7 @@ function Carrito() {
                                 <span className="fw-bold">Total</span>
                                 <span className="fw-bold">${total.toLocaleString('es-CL')}</span>
                             </div>
-                            <Link to="/checkout" className="btn btn-primary w-100 mb-2">
+                            <Link to="/checkout" className="btn btn-primary btn-tienda w-100 mb-2">
                                 Ir a pagar
                             </Link>
                             <Link to="/productos" className="btn btn-outline-secondary w-100">

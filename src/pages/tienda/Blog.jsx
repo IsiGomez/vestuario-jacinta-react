@@ -27,7 +27,7 @@ function Blog() {
                                         {articulo.titulo}
                                     </h5>
                                     <p className="card-text text-muted flex-grow-1">{articulo.extracto}</p>
-                                    <Link to={`/blog/${articulo.id}`} className="btn btn-outline-primary mt-3 align-self-start">
+                                    <Link to={`/blog/${articulo.id}`} className="btn btn-outline-primary btn-tienda mt-3 align-self-start">
                                         Leer artículo completo <i className="bi bi-arrow-right ms-1"></i>
                                     </Link>
                                 </div>

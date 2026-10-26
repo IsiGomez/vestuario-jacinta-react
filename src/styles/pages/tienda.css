@@ -67,14 +67,31 @@
 .btn-tienda {
   background-color: var(--jc-rojo);
   border: 3px solid color-mix(in srgb, var(--jc-rojo), black 20%);
+  color: var(--jc-blanco);
 }
 .btn-tienda:hover,
 .btn-tienda:focus-visible {
   background-color: color-mix(in srgb, var(--jc-rojo), black 5%);
   border-color: color-mix(in srgb, var(--jc-rojo), black 40%);
+  color: var(--jc-blanco);
 }
 
 .btn-tienda:active {
   background-color: color-mix(in srgb, var(--jc-rojo), black 10%) !important;
   border-color: color-mix(in srgb, var(--jc-rojo), black 25%) !important;
+  color: var(--jc-blanco);
+}
+
+.tarjeta-carrito {
+  background-color: var(--jc-durazno-suave);
+  border: 1px solid var(--jc-durazno);
+}
+ 
+.tarjeta-carrito .border-bottom {
+  border-color: var(--jc-durazno) !important;
+}
+ 
+.tarjeta-carrito hr {
+  border-color: var(--jc-durazno);
+  opacity: 1;
 }

@@ -26,7 +26,7 @@ function Categorias() {
                                         <p className="text-muted small mb-3">{cantidad} producto(s)</p>
                                         <Link
                                             to={`/categorias/${encodeURIComponent(categoria.nombre)}`}
-                                            className="btn btn-outline-primary mt-auto"
+                                            className="btn btn-outline-primary btn-tienda mt-auto"
                                         >
                                             Ver productos
                                         </Link>
