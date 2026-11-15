@@ -1,5 +1,10 @@
-function Campo({ etiqueta, nombre, valor, error, ayuda, onChange, as: Control = 'input', children, ...resto }) {
+import { LONGITUDES } from '../utils/longitudes'
+
+function Campo({ etiqueta, nombre, valor, error, ayuda, onChange, as: Control = 'input', children, maxLength, ...resto }) {
     const clase = Control === 'select' ? 'form-select' : 'form-control'
+    const esTexto = Control === 'textarea' || (Control === 'input'
+        && !['number', 'date', 'checkbox', 'radio', 'file'].includes(resto.type))
+    const limite = esTexto ? (maxLength ?? LONGITUDES[nombre] ?? 100) : undefined
 
     return (
         <div className="mb-3">
@@ -12,6 +17,7 @@ function Campo({ etiqueta, nombre, valor, error, ayuda, onChange, as: Control = 
                 onChange={onChange}
                 className={`${clase} ${error ? 'is-invalid' : ''}`}
                 {...resto}
+                maxLength={limite}
             >
                 {children}
             </Control>

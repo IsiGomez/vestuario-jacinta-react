@@ -41,6 +41,7 @@ export function PruebaAuth() {
                             <label className="form-label">Correo:</label>
                             <input
                                 type="email"
+                                maxLength={100}
                                 className="form-control"
                                 value={correo}
                                 onChange={(e) => setCorreo(e.target.value)}
@@ -52,6 +53,7 @@ export function PruebaAuth() {
                             <label className="form-label">Contraseña:</label>
                             <input
                                 type="password"
+                                maxLength={24}
                                 className="form-control"
                                 value={contrasena}
                                 onChange={(e) => setContrasena(e.target.value)}

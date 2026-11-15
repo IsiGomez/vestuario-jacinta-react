@@ -9,8 +9,8 @@ const VALORES_INICIALES = { nombre: '', descripcion: '' }
 
 function validar(datos) {
     const errores = {
-        nombre: validarTexto(datos.nombre, { campo: 'El nombre', min: 3, max: 50 }),
-        descripcion: validarTexto(datos.descripcion, { campo: 'La descripción', min: 5, max: 200 }),
+        nombre: validarTexto(datos.nombre, { campo: 'El nombre', min: 3, max: 100 }),
+        descripcion: validarTexto(datos.descripcion, { campo: 'La descripción', min: 5, max: 500 }),
     }
 
     return Object.fromEntries(Object.entries(errores).filter(([, mensaje]) => mensaje))
@@ -83,7 +83,8 @@ function CategoriaFormulario() {
             <form onSubmit={enviar} noValidate>
                 <Campo 
                     etiqueta="Nombre" 
-                    nombre="nombre" 
+                    nombre="nombre"
+                    maxLength={100}
                     valor={datos.nombre} 
                     error={errores.nombre} 
                     onChange={cambiar} 
@@ -91,7 +92,8 @@ function CategoriaFormulario() {
                 
                 <Campo 
                     etiqueta="Descripción" 
-                    nombre="descripcion" 
+                    nombre="descripcion"
+                    maxLength={500}
                     as="textarea" rows={3}
                     valor={datos.descripcion} 
                     error={errores.descripcion} 

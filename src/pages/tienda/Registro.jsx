@@ -167,7 +167,7 @@ function Registro() {
                         <div className="col-md-6">
                             <Campo
                                 etiqueta="Contraseña"
-                                ayuda="Mínimo 8 caracteres, máximo 72 bytes"
+                                ayuda="Entre 8 y 24 caracteres"
                                 nombre="contrasena"
                                 type="password"
                                 valor={datos.contrasena}

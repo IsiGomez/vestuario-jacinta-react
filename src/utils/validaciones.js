@@ -9,8 +9,8 @@ export const LIMITES = {
     maxDireccion: 300,
     minDireccion: 10,
     
-    contrasenaMin: 4,
-    contrasenaMax: 10,
+    contrasenaMin: 8,
+    contrasenaMax: 24,
     
     maxEdad: 110,
     minEdad: 18,

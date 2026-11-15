@@ -1,3 +1,4 @@
+import { LONGITUDES } from '../../utils/longitudes'
 import { useState } from 'react'
 import {
     normalizarRun,
@@ -19,7 +20,7 @@ const CAMPOS = [
     { nombre: 'nombre', etiqueta: 'Nombre', ejemplo: 'Isidora', validar: validarNombre },
     { nombre: 'apellidos', etiqueta: 'Apellidos', ejemplo: 'Gómez Rojas', validar: validarApellidos },
     { nombre: 'correo', etiqueta: 'Correo', ejemplo: 'admin@duoc.cl', validar: validarCorreo },
-    { nombre: 'contrasena', etiqueta: 'Contraseña (4 a 10)', ejemplo: '1234', validar: validarContrasena },
+    { nombre: 'contrasena', etiqueta: 'Contraseña (8 a 24)', ejemplo: 'Clave1234', validar: validarContrasena },
     {
         nombre: 'fechaNacimiento',
         etiqueta: 'Fecha de nacimiento (opcional, mayor de 18)',
@@ -66,6 +67,7 @@ function PruebaValidaciones() {
                             </label>
                             
                             <input
+                                maxLength={LONGITUDES[campo.nombre]}
                                 id={`val-${campo.nombre}`}
                                 className={`form-control ${clase}`}
                                 type={campo.tipo ?? 'text'}

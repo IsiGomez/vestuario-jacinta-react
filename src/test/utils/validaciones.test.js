@@ -163,15 +163,15 @@ describe('validarContrasena', () => {
         expect(validarContrasena('')).toBe('La contraseña es obligatoria')
     })
 
-    it('valida el rango 4-10 (bordes incluidos)', () => {
-        expect(validarContrasena('abc')).toMatch(/entre 4 y 10/)
-        expect(validarContrasena('abcd')).toBeNull()
-        expect(validarContrasena('a'.repeat(10))).toBeNull()
-        expect(validarContrasena('a'.repeat(11))).toMatch(/entre 4 y 10/)
+    it('valida el rango 8-24 (bordes incluidos)', () => {
+        expect(validarContrasena('a'.repeat(7))).toMatch(/entre 8 y 24/)
+        expect(validarContrasena('a'.repeat(8))).toBeNull()
+        expect(validarContrasena('a'.repeat(24))).toBeNull()
+        expect(validarContrasena('a'.repeat(25))).toMatch(/entre 8 y 24/)
     })
 
     it('no recorta espacios: cuentan como caracteres', () => {
-        expect(validarContrasena('ab  ')).toBeNull()
+        expect(validarContrasena('abcdef  ')).toBeNull()
     })
 })
 

@@ -59,6 +59,9 @@ function Checkout() {
             if (!datos.region.trim()) nuevosErrores.region = 'Ingresa tu región'
             if (!datos.comuna.trim()) nuevosErrores.comuna = 'Ingresa tu comuna'
         }
+        for (const [campo, max] of Object.entries({ nombre: 150, correo: 100, direccion: 300, notas: 500 })) {
+            if (datos[campo].length > max) nuevosErrores[campo] = `Máximo ${max} caracteres`
+        }
         setErrores(nuevosErrores)
         return Object.keys(nuevosErrores).length === 0
     }
@@ -128,12 +131,12 @@ function Checkout() {
                                 <div className="row g-3">
                                     <div className="col-12 col-md-6">
                                         <label className="form-label">Nombre completo</label>
-                                        <input type="text" className={`form-control ${errores.nombre ? 'is-invalid' : ''}`} name="nombre" value={datos.nombre} onChange={cambiar} />
+                                        <input type="text" className={`form-control ${errores.nombre ? 'is-invalid' : ''}`} name="nombre" maxLength={150} value={datos.nombre} onChange={cambiar} />
                                         {errores.nombre && <div className="invalid-feedback">{errores.nombre}</div>}
                                     </div>
                                     <div className="col-12 col-md-6">
                                         <label className="form-label">Correo electrónico</label>
-                                        <input type="email" className={`form-control ${errores.correo ? 'is-invalid' : ''}`} name="correo" value={datos.correo} onChange={cambiar} />
+                                        <input type="email" className={`form-control ${errores.correo ? 'is-invalid' : ''}`} name="correo" maxLength={100} value={datos.correo} onChange={cambiar} />
                                         {errores.correo && <div className="invalid-feedback">{errores.correo}</div>}
                                     </div>
                                 </div>
@@ -166,7 +169,7 @@ function Checkout() {
                                     <div className="row g-3">
                                         <div className="col-12">
                                             <label className="form-label">Dirección de envío</label>
-                                            <input type="text" className={`form-control ${errores.direccion ? 'is-invalid' : ''}`} name="direccion" value={datos.direccion} onChange={cambiar} />
+                                            <input type="text" className={`form-control ${errores.direccion ? 'is-invalid' : ''}`} name="direccion" maxLength={300} value={datos.direccion} onChange={cambiar} />
                                             {errores.direccion && <div className="invalid-feedback">{errores.direccion}</div>}
                                         </div>
                                         <div className="col-12">
@@ -192,7 +195,8 @@ function Checkout() {
                         <div className="card shadow-sm mb-4">
                             <div className="card-body">
                                 <h5 className="card-title mb-3">Notas (opcional)</h5>
-                                <textarea className="form-control" name="notas" rows="3" value={datos.notas} onChange={cambiar} placeholder="Indicaciones para la entrega"></textarea>
+                                <textarea className={`form-control ${errores.notas ? 'is-invalid' : ''}`} name="notas" maxLength={500} rows="3" value={datos.notas} onChange={cambiar} placeholder="Indicaciones para la entrega"></textarea>
+                                {errores.notas && <div className="invalid-feedback">{errores.notas}</div>}
                             </div>
                         </div>
 

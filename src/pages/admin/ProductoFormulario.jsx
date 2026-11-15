@@ -154,7 +154,7 @@ function ProductoFormulario() {
             {errorGuardado && <div className="alert alert-danger">{errorGuardado}</div>}
 
             <form onSubmit={enviar} noValidate>
-                <Campo etiqueta="Nombre" nombre="nombre" valor={datos.nombre} error={errores.nombre} onChange={cambiar} />
+                <Campo etiqueta="Nombre" nombre="nombre" maxLength={80} valor={datos.nombre} error={errores.nombre} onChange={cambiar} />
 
                 <div className="row">
                     <div className="col-md-12">
@@ -219,7 +219,7 @@ function ProductoFormulario() {
                     {errores.colores && <div className="text-danger small">{errores.colores}</div>}
                 </fieldset>
 
-                <Campo etiqueta="Descripción" nombre="descripcion" as="textarea" rows={3} valor={datos.descripcion} error={errores.descripcion} onChange={cambiar} />
+                <Campo etiqueta="Descripción" nombre="descripcion" maxLength={300} as="textarea" rows={3} valor={datos.descripcion} error={errores.descripcion} onChange={cambiar} />
 
                 <div className="d-flex gap-2">
                     <button type="submit" className="btn btn-primary">

@@ -114,6 +114,7 @@ function Contacto() {
                         <Campo
                             etiqueta="Nombre"
                             nombre="nombre"
+                            maxLength={100}
                             valor={datos.nombre}
                             error={errores.nombre}
                             onChange={cambiar}
