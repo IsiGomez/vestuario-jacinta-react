@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useRecurso } from '../../hooks/useRecurso'
+import { useLayoutEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { crearCategoria, actualizarCategoria, obtenerCategoriaPorId } from '../../data/categorias'
+import { crearCategoria, actualizarCategoria, obtenerCategoriaPorId } from '../../services/categoriaService'
 import { validarTexto } from '../../utils/validaciones'
 import Campo from '../../components/Campo'
 
@@ -16,12 +17,14 @@ function validar(datos) {
 }
 
 
+const cargarCategoria = (id) => id ? obtenerCategoriaPorId(id) : null
+
 function CategoriaFormulario() {
     const navegar = useNavigate()
 
     const { id } = useParams()
     const esEdicion = id !== undefined
-    const categoria = esEdicion ? obtenerCategoriaPorId(id) : null
+    const { datos: categoria, cargando, error: errorCarga } = useRecurso(cargarCategoria, id ?? null)
 
     const [datos, setDatos] = useState(() =>
         categoria ? { nombre: categoria.nombre, descripcion: categoria.descripcion } : VALORES_INICIALES
@@ -29,6 +32,9 @@ function CategoriaFormulario() {
     const [errores, setErrores] = useState({})
     const [errorGuardado, setErrorGuardado] = useState('')
 
+    useLayoutEffect(() => { setDatos(categoria ? { nombre: categoria.nombre, descripcion: categoria.descripcion ?? '' } : VALORES_INICIALES) }, [categoria])
+    if (cargando) return <p role="status">Cargando categoría...</p>
+    if (errorCarga) return <div role="alert">{errorCarga}</div>
     if (esEdicion && !categoria) {
         return (
             <div>
@@ -45,7 +51,7 @@ function CategoriaFormulario() {
         setErrores((anterior) => ({ ...anterior, [name]: undefined }))
     }
 
-    const enviar = (e) => {
+    const enviar = async (e) => {
         e.preventDefault()
 
         const erroresEncontrados = validar(datos)
@@ -57,9 +63,9 @@ function CategoriaFormulario() {
 
         try {
             if (esEdicion) {
-                actualizarCategoria(id, campos)
+                await actualizarCategoria(id, campos)
             } else {
-                crearCategoria(campos)
+                await crearCategoria(campos)
             }
             navegar('/admin/categorias')
         } catch (err) {

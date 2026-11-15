@@ -1,5 +1,6 @@
+import { useRecurso } from '../../hooks/useRecurso'
 import { Link, useParams } from 'react-router-dom'
-import { obtenerCategorias } from '../../data/categorias'
+import { obtenerCategorias } from '../../services/categoriaService'
 import { obtenerProductos, disponiblesPrimero } from '../../data/productos'
 import TarjetaProducto from '../../components/TarjetaProducto'
 import EncabezadoPagina from '../../components/EncabezadoPagina'
@@ -7,11 +8,14 @@ import EncabezadoPagina from '../../components/EncabezadoPagina'
 function Categoria() {
     const { categoria } = useParams()
     const nombreCategoria = decodeURIComponent(categoria || '')
-    const categorias = obtenerCategorias()
+    const { datos, cargando, error } = useRecurso(obtenerCategorias)
+    const categorias = datos ?? []
     const categoriaEncontrada = categorias.find(
         (c) => c.nombre.toLowerCase() === nombreCategoria.toLowerCase()
     )
 
+    if (cargando) return <p role="status">Cargando categoría...</p>
+    if (error) return <div role="alert">{error}</div>
     if (!categoriaEncontrada) {
         return (
             <div className="container py-5 text-center">

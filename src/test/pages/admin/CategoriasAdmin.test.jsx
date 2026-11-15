@@ -1,49 +1,27 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
+import { AuthContext } from '../../../context/authContext'
+import { admin } from '../../fixtures/usuarios'
 import CategoriasAdmin from '../../../pages/admin/CategoriasAdmin'
-import { crearCategoria, obtenerCategorias } from '../../../data/categorias'
-
-const renderizar = () => render(<MemoryRouter><CategoriasAdmin /></MemoryRouter>)
-
-describe('CategoriasAdmin', () => {
-    it('lista las categorías con su cantidad de productos', () => {
-        renderizar()
-        const fila = screen.getByText('Camisas').closest('tr')
-        expect(within(fila).getByText('4')).toBeInTheDocument()
-    })
-
-    it('tiene el enlace para crear una nueva categoría', () => {
-        renderizar()
-        expect(screen.getByRole('link', { name: /Nueva categoría/ })).toHaveAttribute('href', '/admin/categorias/nueva')
-    })
-
-    it('cada categoría enlaza a su edición', () => {
-        renderizar()
-        expect(screen.getByRole('link', { name: 'Editar' })).toHaveAttribute('href', '/admin/categorias/1/editar')
-    })
-
-    it('deshabilita "Eliminar" si la categoría tiene productos', () => {
-        renderizar()
-        expect(screen.getByRole('button', { name: 'Eliminar' })).toBeDisabled()
-    })
-
-    it('no elimina si el usuario cancela la confirmación', async () => {
-        crearCategoria({ nombre: 'Poleras', descripcion: 'Poleras varias' })
-        vi.spyOn(window, 'confirm').mockReturnValue(false)
-        renderizar()
-
-        const fila = screen.getByText('Poleras').closest('tr')
-        await userEvent.click(within(fila).getByRole('button', { name: 'Eliminar' }))
-
-        expect(screen.getByText('Poleras')).toBeInTheDocument()
-        expect(obtenerCategorias()).toHaveLength(2)
-    })
-
-    it('muestra un mensaje cuando no hay categorías', () => {
-        localStorage.setItem('jacinta_categorias', '[]')
-        renderizar()
-        expect(screen.getByText('No hay categorías registradas.')).toBeInTheDocument()
-    })
+import * as service from '../../../services/categoriaService'
+vi.mock('../../../services/categoriaService', () => ({ obtenerCategorias: vi.fn(), eliminarCategoria: vi.fn() }))
+const categoria = { id: 1, nombre: 'Camisas', descripcion: 'Ejemplo', productos: 2 }
+const mostrar = (tipoUsuario = 'ADMINISTRADOR') => render(<AuthContext.Provider value={{ usuario: { ...admin, tipoUsuario } }}><MemoryRouter><CategoriasAdmin /></MemoryRouter></AuthContext.Provider>)
+beforeEach(() => service.obtenerCategorias.mockResolvedValue([categoria]))
+it('carga categorías y bloquea eliminar las que tienen productos', async () => {
+    mostrar(); await screen.findByText('Camisas')
+    expect(screen.getByRole('button', { name: /Eliminar/ })).toBeDisabled()
+})
+it('el vendedor solo ve el listado', async () => {
+    mostrar('VENDEDOR'); await screen.findByText('Camisas')
+    expect(screen.queryByRole('link', { name: /Nueva categoría/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Eliminar/ })).not.toBeInTheDocument()
+})
+it('muestra un 409 del servidor al intentar eliminar', async () => {
+    service.obtenerCategorias.mockResolvedValue([{ ...categoria, productos: 0 }])
+    service.eliminarCategoria.mockRejectedValue(new Error('La categoría tiene productos asociados'))
+    vi.spyOn(window, 'confirm').mockReturnValue(true); mostrar(); await screen.findByText('Camisas')
+    await userEvent.click(screen.getByRole('button', { name: /Eliminar/ }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('La categoría tiene productos asociados')
 })

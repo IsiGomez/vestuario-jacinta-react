@@ -1,10 +1,14 @@
+import { useRecurso } from '../../hooks/useRecurso'
 import { Link } from 'react-router-dom'
-import { obtenerCategorias, contarProductosDeCategoria } from '../../data/categorias'
+import { obtenerCategorias } from '../../services/categoriaService'
 import EncabezadoPagina from '../../components/EncabezadoPagina'
 
 function Categorias() {
-    const categorias = obtenerCategorias()
+    const { datos, cargando, error } = useRecurso(obtenerCategorias)
+    const categorias = datos ?? []
 
+    if (cargando) return <p role="status">Cargando categorías...</p>
+    if (error) return <div role="alert">{error}</div>
     return (
         <div className="container pb-4">
             <EncabezadoPagina titulo="Categorías" subtitulo="Explora nuestros productos por categoría" />
@@ -14,7 +18,7 @@ function Categorias() {
             ) : (
                 <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                     {categorias.map((categoria) => {
-                        const cantidad = contarProductosDeCategoria(categoria.id)
+                        const cantidad = categoria.productos
                         return (
                             <div className="col" key={categoria.id}>
                                 <div className="card h-100 shadow-sm">
