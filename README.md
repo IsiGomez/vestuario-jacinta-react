@@ -22,11 +22,11 @@ Basado en el caso **"Vestuarios Jacinta"**: una tienda chilena de ropa casual y 
 
 ## Descripción
 
-El proyecto corresponde al **frontend** de la tienda Jacinta de vestuario, desarrollado con **React** y **Bootstrap**. No tiene backend: una capa de datos en JavaScript simula la base de datos (con operaciones CRUD) y guarda la información en `localStorage`.
+El proyecto corresponde al **frontend** de la tienda Jacinta de vestuario, desarrollado con **React** y **Bootstrap**. Autenticación, usuarios y categorías están conectados al backend Spring Boot. Productos, carrito, órdenes y reportes todavía usan datos locales en `localStorage`.
  
 Incluye la **tienda pública** (home, catálogo, categorías, carrito, checkout, blog, registro e inicio de sesión) y un **panel de administración** completo (productos, categorías, usuarios, órdenes, reportes).
 
-> **Estado actual:** tanto el panel de administración como las vistas de la tienda están implementados, incluido el flujo completo de compra (carrito → checkout → compra exitosa o con error).
+> **Estado actual:** autenticación JWT, usuarios, perfil y categorías integrados con la API. El flujo de compra y la gestión de productos y ventas siguen pendientes de integración con el backend.
 
 ## Tecnologías utilizadas
 
@@ -35,7 +35,7 @@ Incluye la **tienda pública** (home, catálogo, categorías, carrito, checkout,
 - **[React Router 7](https://reactrouter.com/)** — navegación entre vistas y rutas protegidas por rol
 - **[Bootstrap 5](https://getbootstrap.com/) + [React-Bootstrap](https://react-bootstrap.github.io/)** — grillas y componentes responsivos
 - **[Bootstrap Icons](https://icons.getbootstrap.com/)** — iconografía
-- **[bcryptjs](https://github.com/dcodeIO/bcrypt.js)** — contraseñas guardadas como hash
+- **Spring Boot + JWT** — autenticación y permisos; contraseñas hasheadas con BCrypt en el backend
 - **[Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)** — pruebas unitarias (entorno `jsdom`)
 - **[Oxlint](https://oxc.rs/docs/guide/usage/linter)** — linter
 - **[Google Fonts](https://fonts.google.com/)** — tipografías [Poppins](https://fonts.google.com/specimen/Poppins) (texto general) y [Playfair Display](https://fonts.google.com/specimen/Playfair+Display) (encabezados)
@@ -48,10 +48,11 @@ Requisitos: **Node.js 20.19 o superior** y npm.
 git clone https://github.com/isigomez/vestuario-jacinta-react.git
 cd vestuario-jacinta-react
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-La aplicación queda disponible en `http://localhost:5173`.
+La aplicación queda disponible en `http://localhost:5173`. Iniciar también el backend y configurar `VITE_API_URL=http://localhost:8080/api` en `.env`. Reiniciar Vite si cambia esa URL.
 
 | Comando | Descripción |
 | :--- | :--- |
@@ -66,7 +67,9 @@ La aplicación queda disponible en `http://localhost:5173`.
 
 | Correo | Contraseña | Tipo |
 | :--- | :--- | :--- |
-| `admin@duoc.cl` | `1234` | Administrador |
+| `admin@duoc.cl` | `admin1234` | Administrador |
+
+El backend crea esta cuenta al iniciar si el correo no existe; no modifica cuentas existentes.
 
 Inicia sesión en `/login` y entra al panel desde **Panel admin** en la barra de navegación (o en `/admin`).
 
@@ -81,14 +84,15 @@ vestuario-jacinta-react/
     ├── main.jsx / App.jsx
     ├── components/          # EncabezadoPagina, TarjetaProducto, Campo, InputRun, RegionComunaSelect, TarjetaResumen, MiniaturaImagen, Footer…
     ├── context/             # AuthProvider (sesión) y CarritoContext (carrito)
-    ├── hooks/               # useAuth
+    ├── services/            # Cliente API, autenticación, usuarios y categorías
+    ├── hooks/               # useAuth, useRecurso
     ├── layouts/             # TiendaLayout y AdminLayout
     ├── routes/              # Router, rutas de tienda y admin, RutaProtegida
     ├── pages/
     │   ├── admin/           # Dashboard, productos, categorías, usuarios, órdenes, reportes, perfil
     │   ├── tienda/          # Vistas públicas: inicio, productos, categorías, carrito, checkout, blog, contacto…
     │   └── pruebas/         # Páginas auxiliares de desarrollo
-    ├── data/                # Datos simulados con CRUD: productos, categorías, usuarios, órdenes, blogs, regiones/comunas
+    ├── data/                # Datos locales: productos, categorías del catálogo local, órdenes, blogs, regiones/comunas
     ├── utils/               # validaciones, formato, reportes y storage
     ├── styles/              # base, layouts, components, pages
     └── test/                # setup y pruebas unitarias
@@ -105,22 +109,24 @@ vestuario-jacinta-react/
 - **Registro** e **inicio de sesión** de clientes
 - Todas las páginas comparten el componente reutilizable `EncabezadoPagina`, que muestra el título y subtítulo de cada vista en un banner
 
-**Panel de administración (`/admin`, solo rol Administrador)**
+**Panel de administración (`/admin`, acceso según rol)**
+
+El administrador gestiona usuarios y categorías; el vendedor consulta categorías y accede a las rutas de productos y ventas. Los permisos de productos y ventas siguen pendientes de integración por B.
 - Dashboard con ventas totales, órdenes por estado, gráfico de los últimos 6 meses, productos críticos y más vendidos
 - CRUD de **productos** con colores, imágenes, stock y stock crítico; listado de productos críticos
 - CRUD de **categorías** (no permite eliminar una categoría con productos asociados)
 - CRUD de **usuarios**, con historial de compras por cliente
 - **Órdenes / boletas**: listado, filtro, cambio de estado y detalle de boleta
 - **Reportes** generales y de productos
-- Perfil del administrador
+- Perfil propio para clientes, vendedores y administradores
 
 **Transversal**
-- Inicio de sesión con contraseñas hasheadas (bcrypt) y rutas protegidas por rol
-- Formularios con validación por campo: RUN chileno (dígito verificador), nombre, apellidos, correo, contraseña, fecha de nacimiento, dirección y selección en cascada Región → Comuna
-- Datos persistentes en `localStorage` (claves `jacinta_productos`, `jacinta_categorias`, `jacinta_usuarios`, `jacinta_ordenes`, `jacinta_blogs`, `jacinta_sesion` y `jacinta_carrito_*`)
+- Inicio de sesión mediante JWT, restauración y renovación de sesión, contraseñas hasheadas con BCrypt en el backend y rutas protegidas por rol
+- Formularios con validación por campo: RUN chileno (dígito verificador), nombre, apellidos, correo, teléfono, contraseña, fecha de nacimiento, dirección y selección en cascada Región → Comuna
+- Usuarios y categorías persistidos en H2; tokens en `localStorage` (`jacinta_access_token` y `jacinta_refresh_token`). Productos, órdenes, blogs, categorías del catálogo local y carrito mantienen sus claves locales.
 - Diseño responsivo con Bootstrap (menú colapsable, tablas con scroll horizontal, grillas)
 
-Se usa **Vitest** con **React Testing Library** (`describe`, `it`, `expect`). Son **27 archivos de prueba y 352 pruebas** que cubren utilidades, capa de datos, componentes y páginas del panel de administración. La configuración está en `vitest.config.js` y `src/test/setup.js`, que limpia `localStorage`, desmonta los componentes y restaura los mocks entre pruebas.
+Se usa **Vitest** con **React Testing Library** (`describe`, `it`, `expect`). Son **34 archivos de prueba y 315 pruebas** que cubren utilidades, capa de datos, componentes y páginas del panel de administración. La configuración está en `vitest.config.js` y `src/test/setup.js`, que limpia `localStorage`, desmonta los componentes y restaura los mocks entre pruebas.
  
 ```bash
 npx vitest run
@@ -129,10 +135,14 @@ npx vitest run --coverage
  
 | Carpeta | Archivos | Pruebas | Qué verifica |
 | :--- | :---: | :---: | :--- |
-| `src/test/utils/` | 4 | 107 | Validaciones (RUN, correo, contraseña…), formato de precios/RUN/fechas, reportes y storage |
-| `src/test/data/` | 5 | 103 | CRUD de productos, categorías, usuarios, órdenes y regiones/comunas |
-| `src/test/components/` | 4 | 23 | `InputRun`, `MiniaturaImagen`, `RegionComunaSelect` y `TarjetaResumen` |
-| `src/test/pages/admin/` | 14 | 119 | Dashboard, CRUD, órdenes, boletas, reportes y perfil del panel de administración |
+| `src/test/utils/` | 5 | 93 | Validaciones, formato, reportes, storage, roles y permisos |
+| `src/test/data/` | 4 | 69 | CRUD local de productos, categorías, órdenes y regiones/comunas |
+| `src/test/components/` | 4 | 23 | InputRun, MiniaturaImagen, RegionComunaSelect y TarjetaResumen |
+| `src/test/pages/admin/` | 14 | 95 | Dashboard, CRUD asíncrono, órdenes, boletas, reportes y perfil |
+| `src/test/services/` | 3 | 8 | Cliente API, renovación de tokens y servicio de usuarios |
+| `src/test/hooks/` | 1 | 1 | Permisos expuestos por useAuth |
+| `src/test/context/` | 1 | 3 | Restauración y cierre de sesión |
+| `src/test/routes/` | 2 | 5 | Rutas protegidas y menú por rol |
  
 ## Paleta de diseño
  
