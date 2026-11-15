@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { crearUsuario } from '../../data/usuarios'
+import { registrar } from '../../services/authService'
+import { validarClave } from '../../utils/validacionUsuario'
 import { useAuth } from '../../hooks/useAuth'
 import EncabezadoPagina from '../../components/EncabezadoPagina'
 import Campo from '../../components/Campo'
@@ -11,7 +12,6 @@ import {
     validarNombre,
     validarApellidos,
     validarCorreo,
-    validarContrasena,
     validarFechaNacimiento,
     validarDireccion,
     validarRequerido,
@@ -19,6 +19,7 @@ import {
 
 const VALORES_INICIALES = {
     run: '',
+    telefono: '',
     nombre: '',
     apellidos: '',
     correo: '',
@@ -33,11 +34,12 @@ const VALORES_INICIALES = {
 
 function validar(datos) {
     const errores = {
+        telefono: validarRequerido(datos.telefono, 'El teléfono'),
         run: validarRun(datos.run),
         nombre: validarNombre(datos.nombre),
         apellidos: validarApellidos(datos.apellidos),
         correo: validarCorreo(datos.correo),
-        contrasena: validarContrasena(datos.contrasena),
+        contrasena: validarClave(datos.contrasena),
         confirmarContrasena: datos.contrasena !== datos.confirmarContrasena ? 'Las contraseñas no coinciden' : null,
         fechaNacimiento: validarFechaNacimiento(datos.fechaNacimiento),
         region: validarRequerido(datos.region, 'La región'),
@@ -50,16 +52,18 @@ function validar(datos) {
 
 
 function Registro() {
-    const { usuario, iniciarSesion } = useAuth()
+    const { usuario, iniciarSesion, cargando } = useAuth()
     const navegar = useNavigate()
     const ubicacion = useLocation()
 
     const [datos, setDatos] = useState(VALORES_INICIALES)
     const [errores, setErrores] = useState({})
     const [errorGuardado, setErrorGuardado] = useState('')
+    const [enviando, setEnviando] = useState(false)
 
     const destino = ubicacion.state?.desde ?? '/'
 
+    if (cargando) return <p role="status">Cargando sesión...</p>
     if (usuario) return <Navigate to={destino} replace />
 
     const cambiar = (e) => {
@@ -74,7 +78,7 @@ function Registro() {
         setErrores((anterior) => ({ ...anterior, region: undefined, comuna: undefined }))
     }
 
-    const enviar = (e) => {
+    const enviar = async (e) => {
         e.preventDefault()
         setErrorGuardado('')
 
@@ -89,21 +93,20 @@ function Registro() {
             apellidos: datos.apellidos.trim(),
             correo: datos.correo.trim(),
             contrasena: datos.contrasena,
-            fechaNacimiento: datos.fechaNacimiento,
-            tipoUsuario: 'Cliente',
+            telefono: datos.telefono.trim(),
+            fechaNacimiento: datos.fechaNacimiento || null,
             region: datos.region,
             comuna: datos.comuna,
             direccion: datos.direccion.trim(),
         }
 
+        setEnviando(true)
         try {
-            crearUsuario(campos)
-        } catch (err) {
-            setErrorGuardado(err.message)
-            return
-        }
-
-        if (!iniciarSesion(campos.correo, campos.contrasena)) navegar('/login', { replace: true })
+            await registrar(campos)
+            try { await iniciarSesion(campos.correo, campos.contrasena) }
+            catch { navegar('/login', { replace: true }) }
+        } catch (err) { setErrorGuardado(err.message) }
+        finally { setEnviando(false) }
     }
 
 
@@ -126,6 +129,7 @@ function Registro() {
                         maxLength={12}
                     />
 
+                    <Campo etiqueta="Teléfono" nombre="telefono" type="tel" valor={datos.telefono} error={errores.telefono} onChange={cambiar} />
                     <div className="row">
                         <div className="col-md-6">
                             <Campo
@@ -163,7 +167,7 @@ function Registro() {
                         <div className="col-md-6">
                             <Campo
                                 etiqueta="Contraseña"
-                                ayuda="Entre 4 y 10 caracteres"
+                                ayuda="Mínimo 8 caracteres, máximo 72 bytes"
                                 nombre="contrasena"
                                 type="password"
                                 valor={datos.contrasena}
@@ -210,7 +214,7 @@ function Registro() {
                         autoComplete="street-address"
                     />
 
-                    <button type="submit" className="btn btn-auth btn-primary w-100 mt-2">Crear cuenta</button>
+                    <button disabled={enviando} type="submit" className="btn btn-auth btn-primary w-100 mt-2">Crear cuenta</button>
                 </form>
 
                 <p className="auth-pie">

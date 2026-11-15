@@ -5,6 +5,7 @@ import RutaProtegida from './RutaProtegida'
 import rutasTienda from './RutasTienda'
 import rutasAdmin from './RutasAdmin'
 import NoEncontrada from '../pages/NoEncontrada'
+import { ROLES } from '../utils/roles'
 import PaginaPruebas from '../pages/pruebas/PaginaPruebas'
 
 
@@ -17,11 +18,13 @@ export const router = createBrowserRouter([
     {
         path: '/admin',
         element: (
-        <RutaProtegida roles={['Administrador']}>
+        <RutaProtegida roles={[ROLES.ADMINISTRADOR, ROLES.VENDEDOR]}>
             <AdminLayout />
         </RutaProtegida>
         ),
-        children: rutasAdmin,
+        children: rutasAdmin.map((ruta) => ({ ...ruta, element: (
+            <RutaProtegida roles={ruta.roles}><>{ruta.element}</></RutaProtegida>
+        ) })),
     },
 
     { path: '/pruebas', element: <PaginaPruebas /> },

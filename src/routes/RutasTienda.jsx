@@ -1,3 +1,5 @@
+import Perfil from '../pages/admin/Perfil'
+import RutaProtegida from './RutaProtegida'
 import Login from '../pages/tienda/Login'
 import Registro from '../pages/tienda/Registro'
 import Productos from '../pages/tienda/Productos'
@@ -15,6 +17,7 @@ import CompraExitosa from '../pages/tienda/CompraExitosa'
 import CompraError from '../pages/tienda/CompraError'
 
 const rutasTienda = [
+    { path: 'perfil', element: <RutaProtegida><Perfil /></RutaProtegida> },
     { 
         index: true, 
         element: <Inicio /> 

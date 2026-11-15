@@ -1,3 +1,6 @@
+import { Navigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+import { ROLES } from '../utils/roles'
 import ProductosAdmin from '../pages/admin/ProductosAdmin'
 import ProductoFormulario from '../pages/admin/ProductoFormulario'
 import ProductosCriticos from '../pages/admin/ProductosCriticos'
@@ -13,10 +16,14 @@ import ReportesProductos from '../pages/admin/ReportesProductos'
 import HistorialCompras from '../pages/admin/HistorialCompras'
 import Dashboard from '../pages/admin/Dashboard'
 
+function EntradaAdmin() {
+    const { esAdmin } = useAuth()
+    return esAdmin ? <Dashboard /> : <Navigate to="/admin/productos" replace />
+}
 const rutasAdmin = [
     { 
         index: true, 
-        element: <Dashboard /> 
+        element: <EntradaAdmin />
     },
 
     { 
@@ -88,4 +95,9 @@ const rutasAdmin = [
     },
 ]
 
+const soloAdmin = ['usuarios', 'categorias/nueva', 'categorias/:id/editar']
+for (const ruta of rutasAdmin) {
+    ruta.roles = (ruta.path === 'reportes' || soloAdmin.some((prefijo) => ruta.path === prefijo || ruta.path?.startsWith(`${prefijo}/`)))
+        ? [ROLES.ADMINISTRADOR] : [ROLES.ADMINISTRADOR, ROLES.VENDEDOR]
+}
 export default rutasAdmin

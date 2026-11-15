@@ -32,6 +32,8 @@ const ENLACES = [
         texto: 'Reportes', 
         icono: 'bi-graph-up' 
     },
+    { to: '/admin/reportes/productos', texto: 'Reportes de productos', icono: 'bi-box' },
+    { to: '/admin/productos/criticos', texto: 'Stock crítico', icono: 'bi-exclamation-triangle' },
     { 
         to: '/admin/perfil', 
         texto: 'Perfil', 
@@ -41,7 +43,7 @@ const ENLACES = [
 
 
 function AdminLayout() {
-    const { usuario, cerrarSesion } = useAuth()
+    const { usuario, cerrarSesion, puede, esAdmin } = useAuth()
     const navegar = useNavigate()
 
     const salir = () => {
@@ -58,7 +60,11 @@ function AdminLayout() {
                 </div>
                 
                 <nav className="nav nav-pills flex-md-column gap-1">
-                    {ENLACES.map((enlace) => (
+                    {ENLACES.filter((enlace) => ({
+                        '/admin': esAdmin,
+                        '/admin/usuarios': puede('usuarios:ver'),
+                        '/admin/reportes': puede('reportes:ver'),
+                    })[enlace.to] ?? true).map((enlace) => (
                         <NavLink key={enlace.to} to={enlace.to} end={enlace.end} className="nav-link">
                             <i className={`bi ${enlace.icono} me-2`} /> {enlace.texto}
                         </NavLink>

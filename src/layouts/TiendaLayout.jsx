@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useCarrito } from '../context/CarritoContext'
 
 function TiendaLayout() {
-    const { usuario, esAdmin, cerrarSesion } = useAuth()
+    const { usuario, esPersonal, cerrarSesion } = useAuth()
     const { obtenerCantidadTotal } = useCarrito()
     const cantidadCarrito = obtenerCantidadTotal()
 
@@ -36,7 +36,8 @@ function TiendaLayout() {
                             </Nav.Link>
                             {usuario ? (
                                 <>
-                                    {esAdmin && <Nav.Link as={NavLink} to="/admin">Panel admin</Nav.Link>}
+                                    <Nav.Link as={NavLink} to="/perfil">Mi perfil</Nav.Link>
+                                    {esPersonal && <Nav.Link as={NavLink} to="/admin">Panel admin</Nav.Link>}
                                     <Navbar.Text className="mx-2">Hola, {usuario.nombre}</Navbar.Text>
                                     <Nav.Link as="button" onClick={cerrarSesion}>Cerrar sesión</Nav.Link>
                                 </>

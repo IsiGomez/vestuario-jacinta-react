@@ -1,3 +1,4 @@
+import { ROLES } from '../../utils/roles'
 import { useState } from 'react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
@@ -18,16 +19,18 @@ function validar(datos) {
 
 
 function Login() {
-    const { usuario, iniciarSesion } = useAuth()
+    const { usuario, iniciarSesion, cargando } = useAuth()
     const ubicacion = useLocation()
 
     const [datos, setDatos] = useState(VALORES_INICIALES)
     const [errores, setErrores] = useState({})
     const [errorLogin, setErrorLogin] = useState('')
+    const [enviando, setEnviando] = useState(false)
 
     const desde = ubicacion.state?.desde
-    const destinoPara = (u) => desde ?? (u.tipoUsuario === 'Administrador' ? '/admin' : '/')
+    const destinoPara = (u) => (desde?.startsWith('/') && !desde.startsWith('//') && (u.tipoUsuario !== ROLES.CLIENTE || !desde.startsWith('/admin')) ? desde : (u.tipoUsuario === ROLES.CLIENTE ? '/' : '/admin'))
 
+    if (cargando) return <p role="status">Cargando sesión...</p>
     if (usuario) return <Navigate to={destinoPara(usuario)} replace />
 
     const cambiar = (e) => {
@@ -38,7 +41,7 @@ function Login() {
         setErrorLogin('')
     }
 
-    const enviar = (e) => {
+    const enviar = async (e) => {
         e.preventDefault()
 
         const erroresEncontrados = validar(datos)
@@ -46,9 +49,10 @@ function Login() {
 
         if (Object.keys(erroresEncontrados).length > 0) return
 
-        if (!iniciarSesion(datos.correo, datos.contrasena)) {
-            setErrorLogin('Correo o contraseña incorrectos')
-        }
+        setEnviando(true)
+        try { await iniciarSesion(datos.correo, datos.contrasena) }
+        catch (error) { setErrorLogin(error.message) }
+        finally { setEnviando(false) }
     }
 
     
@@ -83,7 +87,7 @@ function Login() {
                         placeholder="1234"
                     />
 
-                    <button type="submit" className="btn btn-auth btn-primary w-100 mt-2">Ingresar</button>
+                    <button disabled={enviando} type="submit" className="btn btn-auth btn-primary w-100 mt-2">Ingresar</button>
                 </form>
 
                 <p className="auth-pie">
