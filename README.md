@@ -67,9 +67,9 @@ La aplicación queda disponible en `http://localhost:5173`. Iniciar también el 
 
 | Correo | Contraseña | Tipo |
 | :--- | :--- | :--- |
-| `admin@duoc.cl` | `admin1234` | Administrador |
+| `admin@duoc.cl` | `1234` | Administrador |
 
-El backend crea esta cuenta al iniciar si el correo no existe; no modifica cuentas existentes.
+Esta cuenta viene del SQL inicial de MySQL; el backend no crea ni restablece cuentas al arrancar. Las contraseñas nuevas deben tener entre 8 y 24 caracteres.
 
 Inicia sesión en `/login` y entra al panel desde **Panel admin** en la barra de navegación (o en `/admin`).
 
@@ -126,7 +126,7 @@ El administrador gestiona usuarios y categorías; el vendedor consulta categorí
 - Usuarios y categorías persistidos en H2; tokens en `localStorage` (`jacinta_access_token` y `jacinta_refresh_token`). Productos, órdenes, blogs, categorías del catálogo local y carrito mantienen sus claves locales.
 - Diseño responsivo con Bootstrap (menú colapsable, tablas con scroll horizontal, grillas)
 
-Se usa **Vitest** con **React Testing Library** (`describe`, `it`, `expect`). Son **34 archivos de prueba y 315 pruebas** que cubren utilidades, capa de datos, componentes y páginas del panel de administración. La configuración está en `vitest.config.js` y `src/test/setup.js`, que limpia `localStorage`, desmonta los componentes y restaura los mocks entre pruebas.
+Se usa **Vitest** con **React Testing Library** (`describe`, `it`, `expect`). Son **35 archivos de prueba y 317 pruebas** que cubren utilidades, capa de datos, componentes y páginas del panel de administración. La configuración está en `vitest.config.js` y `src/test/setup.js`, que limpia `localStorage`, desmonta los componentes y restaura los mocks entre pruebas.
  
 ```bash
 npx vitest run
@@ -137,7 +137,7 @@ npx vitest run --coverage
 | :--- | :---: | :---: | :--- |
 | `src/test/utils/` | 5 | 93 | Validaciones, formato, reportes, storage, roles y permisos |
 | `src/test/data/` | 4 | 69 | CRUD local de productos, categorías, órdenes y regiones/comunas |
-| `src/test/components/` | 4 | 23 | InputRun, MiniaturaImagen, RegionComunaSelect y TarjetaResumen |
+| `src/test/components/` | 5 | 25 | InputRun, MiniaturaImagen, RegionComunaSelect y TarjetaResumen |
 | `src/test/pages/admin/` | 14 | 95 | Dashboard, CRUD asíncrono, órdenes, boletas, reportes y perfil |
 | `src/test/services/` | 3 | 8 | Cliente API, renovación de tokens y servicio de usuarios |
 | `src/test/hooks/` | 1 | 1 | Permisos expuestos por useAuth |
