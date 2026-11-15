@@ -1,9 +1,10 @@
+import { useRecurso } from '../../hooks/useRecurso'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { obtenerOrdenes, totalOrden } from '../../data/ordenes'
 import { obtenerProductos } from '../../data/productos'
-import { obtenerUsuarios } from '../../data/usuarios'
+import { obtenerUsuarios } from '../../services/usuarioService'
 import {
     resumenVentas,
     resumenInventario,
@@ -22,6 +23,8 @@ const COLOR_ESTADO = {
 
 function Dashboard() {
     const { usuario } = useAuth()
+    const { datos: usuarios, error: errorUsuarios } = useRecurso(obtenerUsuarios)
+    const clientes = usuarios?.filter((u) => u.tipoUsuario === 'CLIENTE').length ?? 0
 
     const [datos] = useState(() => {
         const ordenes = obtenerOrdenes()
@@ -34,7 +37,6 @@ function Dashboard() {
             porMes: ventasPorMes(ordenes, 6),
             porEstado: ordenesPorEstado(ordenes),
             masVendidos: productosMasVendidos(ordenes, 3),
-            clientes: obtenerUsuarios().filter((u) => u.tipoUsuario === 'Cliente').length,
             recientes: [...ordenes].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 5),
             criticos: productos
                 .filter((p) => p.stock <= p.stockCritico)
@@ -43,7 +45,7 @@ function Dashboard() {
         }
     })
 
-    const { totalOrdenes, ventas, inventario, porMes, porEstado, masVendidos, clientes, recientes, criticos } = datos
+    const { totalOrdenes, ventas, inventario, porMes, porEstado, masVendidos, recientes, criticos } = datos
     const maxMonto = Math.max(...porMes.map((m) => m.monto), 1)
 
     return (
@@ -64,6 +66,7 @@ function Dashboard() {
                 </div>
             </div>
 
+            {errorUsuarios && <div role="alert">{errorUsuarios}</div>}
             <div className="row g-3 mb-4">
                 <div className="col-12 col-sm-6 col-xl-3">
                     <TarjetaResumen

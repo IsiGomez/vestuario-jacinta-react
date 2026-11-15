@@ -1,27 +1,28 @@
+import { ROLES } from '../../utils/roles'
+import { useRecurso } from '../../hooks/useRecurso'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { obtenerUsuarios, eliminarUsuario } from '../../data/usuarios'
+import { obtenerUsuarios, eliminarUsuario } from '../../services/usuarioService'
 import { useAuth } from '../../hooks/useAuth'
 import { formatearRun } from '../../utils/formato'
 
-const iniciales = (u) => `${u.nombre?.[0] ?? ''}${u.apellidos?.[0] ?? ''}`.toUpperCase()
-const claseTipo = (u) => (u.tipoUsuario === 'Administrador' ? 'admin' : 'cliente')
 
 function UsuariosAdmin() {
     const { usuario: sesion } = useAuth()
-    const [usuarios, setUsuarios] = useState(obtenerUsuarios)
+    const { datos, cargando, error: errorCarga, recargar } = useRecurso(obtenerUsuarios)
+    const usuarios = datos ?? []
     const [error, setError] = useState('')
 
     const motivoBloqueo = (u) => (u.id === sesion.id ? 'No puedes eliminar tu propia cuenta' : '')
 
-    const eliminar = (u) => {
+    const eliminar = async (u) => {
         if (motivoBloqueo(u)) return
 
-        if (!window.confirm(`¿Eliminar a ${u.nombre} ${u.apellidos}? Esta acción no se puede deshacer.`)) return
+        if (!window.confirm(`¿Eliminar a ${u.nombre} ${u.apellidos}? La cuenta quedará desactivada.`)) return
 
         try {
-            eliminarUsuario(u.id)
-            setUsuarios(obtenerUsuarios())
+            await eliminarUsuario(u.id)
+            recargar()
             setError('')
         } catch (e) {
             setError(e.message)
@@ -39,7 +40,8 @@ function UsuariosAdmin() {
                 </Link>
             </div>
 
-            {error && <div className="alert alert-danger">{error}</div>}
+            {(error || errorCarga) && <div role="alert" className="alert alert-danger">{error || errorCarga}</div>}
+            {cargando && <p role="status">Cargando usuarios...</p>}
 
             <div className="table-responsive">
                 <table className="table table-hover align-middle">
@@ -64,7 +66,7 @@ function UsuariosAdmin() {
                                     <td>{u.nombre} {u.apellidos}</td>
                                     <td>{u.correo}</td>
                                     <td>
-                                        <span className={`badge ${u.tipoUsuario === 'Administrador' ? 'bg-primary' : 'bg-secondary'}`}>
+                                        <span className={`badge ${u.tipoUsuario === ROLES.ADMINISTRADOR ? 'bg-primary' : 'bg-secondary'}`}>
                                             {u.tipoUsuario}
                                         </span>
                                     </td>
@@ -79,7 +81,7 @@ function UsuariosAdmin() {
                                                 <i className="bi bi-pencil me-1" /> Editar
                                             </Link>
 
-                                            {u.tipoUsuario === 'Cliente' && (
+                                            {u.tipoUsuario === ROLES.CLIENTE && (
                                                 <Link
                                                     to={`/admin/usuarios/${u.id}/historial`}
                                                     className="btn btn-outline-secondary btn-sm"
@@ -104,7 +106,7 @@ function UsuariosAdmin() {
                             )
                         })}
 
-                        {usuarios.length === 0 && (
+                        {!cargando && !errorCarga && usuarios.length === 0 && (
                             <tr>
                                 <td colSpan={6} className="text-center text-muted py-4">
                                     No hay usuarios registrados.

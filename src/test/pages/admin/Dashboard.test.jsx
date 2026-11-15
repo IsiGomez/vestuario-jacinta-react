@@ -3,11 +3,15 @@ import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import Dashboard from '../../../pages/admin/Dashboard'
 import { AuthContext } from '../../../context/authContext'
-import { crearUsuario } from '../../../data/usuarios'
+import { waitFor } from '@testing-library/react'
+const fixture = vi.hoisted(() => ({ usuarios: [] }))
+vi.mock('../../../services/usuarioService', () => ({ obtenerUsuarios: vi.fn(async () => fixture.usuarios) }))
+const crearUsuario = (u) => fixture.usuarios.push({ ...u, tipoUsuario: u.tipoUsuario.toUpperCase() })
 import { actualizarProducto, obtenerProductos } from '../../../data/productos'
 import { precio, tarjeta } from '../../helpers'
 
 beforeEach(() => {
+    fixture.usuarios = []
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-10-22T12:00:00'))
 })
@@ -58,10 +62,10 @@ describe('Dashboard - tarjetas resumen', () => {
         expect(tarjeta('Productos críticos')).toHaveTextContent('de 4 productos')
     })
 
-    it('Clientes: solo cuenta usuarios de tipo Cliente', () => {
+    it('Clientes: solo cuenta usuarios de tipo Cliente', async () => {
         crearUsuario({ run: '12345678-5', nombre: 'Ana', apellidos: 'Gómez', correo: 'ana@gmail.com', contrasena: 'abcd', tipoUsuario: 'Cliente' })
         renderizar()
-        expect(tarjetaPorTitulo('Clientes').getByText('1')).toBeInTheDocument()
+        await waitFor(() => expect(tarjetaPorTitulo('Clientes').getByText('1')).toBeInTheDocument())
     })
 
     it('Clientes es 0 si solo existe el administrador', () => {

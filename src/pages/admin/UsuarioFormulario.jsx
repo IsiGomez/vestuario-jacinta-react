@@ -1,6 +1,9 @@
-import { useState } from 'react'
+import { ROLES } from '../../utils/roles'
+import { useRecurso } from '../../hooks/useRecurso'
+import { validarClave } from '../../utils/validacionUsuario'
+import { useLayoutEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { crearUsuario, actualizarUsuario, obtenerUsuarioPorId, TIPOS_USUARIO } from '../../data/usuarios'
+import { crearUsuario, actualizarUsuario, obtenerUsuarioPorId, TIPOS_USUARIO } from '../../services/usuarioService'
 import { useAuth } from '../../hooks/useAuth'
 import Campo from '../../components/Campo'
 import RegionComunaSelect from '../../components/RegionComunaSelect'
@@ -10,7 +13,6 @@ import {
     validarNombre,
     validarApellidos,
     validarCorreo,
-    validarContrasena,
     validarFechaNacimiento,
     validarDireccion,
     validarRequerido,
@@ -19,18 +21,20 @@ import {
 
 const VALORES_INICIALES = {
     run: '',
+    telefono: '',
     nombre: '',
     apellidos: '',
     correo: '',
     contrasena: '',
     fechaNacimiento: '',
-    tipoUsuario: 'Cliente',
+    tipoUsuario: ROLES.CLIENTE,
     region: '',
     comuna: '',
     direccion: '',
 }
 
 const usuarioAFormulario = (u) => ({
+    telefono: u.telefono ?? '',
     run: u.run,
     nombre: u.nombre,
     apellidos: u.apellidos,
@@ -45,11 +49,12 @@ const usuarioAFormulario = (u) => ({
 
 function validar(datos, esEdicion) {
     const errores = {
+        telefono: validarRequerido(datos.telefono, 'El teléfono'),
         run: validarRun(datos.run),
         nombre: validarNombre(datos.nombre),
         apellidos: validarApellidos(datos.apellidos),
         correo: validarCorreo(datos.correo),
-        contrasena: esEdicion && !datos.contrasena ? null : validarContrasena(datos.contrasena),
+        contrasena: esEdicion && !datos.contrasena ? null : validarClave(datos.contrasena),
         fechaNacimiento: validarFechaNacimiento(datos.fechaNacimiento),
         region: validarRequerido(datos.region, 'La región'),
         comuna: validarRequerido(datos.comuna, 'La comuna'),
@@ -59,18 +64,25 @@ function validar(datos, esEdicion) {
     return Object.fromEntries(Object.entries(errores).filter(([, mensaje]) => mensaje))
 }
 
+const cargarUsuario = (id) => id ? obtenerUsuarioPorId(id) : null
+
 function UsuarioFormulario() {
     const navegar = useNavigate()
     const { usuario: sesion, refrescarSesion } = useAuth()
 
     const { id } = useParams()
     const esEdicion = id !== undefined
-    const usuario = esEdicion ? obtenerUsuarioPorId(id) : null
+    const { datos: usuario, cargando, error: errorCarga } = useRecurso(cargarUsuario, id ?? null)
 
     const [datos, setDatos] = useState(() => (usuario ? usuarioAFormulario(usuario) : VALORES_INICIALES))
     const [errores, setErrores] = useState({})
     const [errorGuardado, setErrorGuardado] = useState('')
 
+    useLayoutEffect(() => {
+        setDatos(usuario ? usuarioAFormulario(usuario) : VALORES_INICIALES)
+    }, [usuario])
+    if (cargando) return <p role="status">Cargando usuario...</p>
+    if (errorCarga) return <div role="alert">{errorCarga}</div>
     if (esEdicion && !usuario) {
         return (
             <div>
@@ -94,7 +106,7 @@ function UsuarioFormulario() {
         setErrores((anterior) => ({ ...anterior, region: undefined, comuna: undefined }))
     }
 
-    const enviar = (e) => {
+    const enviar = async (e) => {
         e.preventDefault()
 
         const erroresEncontrados = validar(datos, esEdicion)
@@ -103,11 +115,12 @@ function UsuarioFormulario() {
         if (Object.keys(erroresEncontrados).length > 0) return
 
         const campos = {
+            telefono: datos.telefono.trim(),
             run: normalizarRun(datos.run),
             nombre: datos.nombre.trim(),
             apellidos: datos.apellidos.trim(),
             correo: datos.correo.trim(),
-            fechaNacimiento: datos.fechaNacimiento,
+            fechaNacimiento: datos.fechaNacimiento || null,
             tipoUsuario: datos.tipoUsuario,
             region: datos.region,
             comuna: datos.comuna,
@@ -119,10 +132,10 @@ function UsuarioFormulario() {
 
         try {
             if (esEdicion) {
-                actualizarUsuario(id, campos)
-                if (editandoseASiMismo) refrescarSesion()
+                await actualizarUsuario(id, campos)
+                if (editandoseASiMismo) await refrescarSesion()
             } else {
-                crearUsuario(campos)
+                await crearUsuario(campos)
             }
             navegar('/admin/usuarios')
         } catch (err) {
@@ -137,6 +150,7 @@ function UsuarioFormulario() {
             {errorGuardado && <div className="alert alert-danger">{errorGuardado}</div>}
 
             <form onSubmit={enviar} noValidate className="card form-card p-4">
+                <Campo etiqueta="Teléfono" nombre="telefono" type="tel" valor={datos.telefono} error={errores.telefono} onChange={cambiar} />
                 <div className="row">
                     <div className="col-md-6">
                         <Campo 

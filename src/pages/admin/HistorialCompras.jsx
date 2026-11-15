@@ -1,13 +1,16 @@
+import { useRecurso } from '../../hooks/useRecurso'
 import { Link, useParams } from 'react-router-dom'
-import { obtenerUsuarioPorId } from '../../data/usuarios'
+import { obtenerUsuarioPorId } from '../../services/usuarioService'
 import { obtenerOrdenesDeUsuario, totalOrden } from '../../data/ordenes'
 import { formatearPrecio, formatearFecha } from '../../utils/formato'
 import TarjetaResumen from '../../components/TarjetaResumen'
 
 function HistorialCompras() {
     const { id } = useParams()
-    const usuario = obtenerUsuarioPorId(id)
+    const { datos: usuario, cargando, error } = useRecurso(obtenerUsuarioPorId, id)
 
+    if (cargando) return <p role="status">Cargando usuario...</p>
+    if (error) return <div role="alert">{error}</div>
     if (!usuario) {
         return (
             <div>

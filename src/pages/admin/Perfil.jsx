@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { actualizarUsuario, obtenerUsuarioPorId } from '../../data/usuarios'
+import { actualizarPerfil } from '../../services/usuarioService'
+import { validarClave } from '../../utils/validacionUsuario'
 import { useAuth } from '../../hooks/useAuth'
 import Campo from '../../components/Campo'
 import RegionComunaSelect from '../../components/RegionComunaSelect'
@@ -9,7 +10,6 @@ import {
     validarNombre,
     validarApellidos,
     validarCorreo,
-    validarContrasena,
     validarFechaNacimiento,
     validarDireccion,
     validarRequerido,
@@ -17,6 +17,7 @@ import {
 
 
 const perfilAFormulario = (u) => ({
+    telefono: u.telefono ?? '',
     run: u.run,
     nombre: u.nombre,
     apellidos: u.apellidos,
@@ -31,11 +32,12 @@ const perfilAFormulario = (u) => ({
 
 function validar(datos) {
     const errores = {
+        telefono: validarRequerido(datos.telefono, 'El teléfono'),
         run: validarRun(datos.run),
         nombre: validarNombre(datos.nombre),
         apellidos: validarApellidos(datos.apellidos),
         correo: validarCorreo(datos.correo),
-        contrasena: datos.contrasena ? validarContrasena(datos.contrasena) : null,
+        contrasena: datos.contrasena ? validarClave(datos.contrasena) : null,
         fechaNacimiento: validarFechaNacimiento(datos.fechaNacimiento),
         region: validarRequerido(datos.region, 'La región'),
         comuna: validarRequerido(datos.comuna, 'La comuna'),
@@ -49,7 +51,7 @@ function validar(datos) {
 function Perfil() {
     const { usuario: sesion, refrescarSesion } = useAuth()
 
-    const [datos, setDatos] = useState(() => perfilAFormulario(obtenerUsuarioPorId(sesion.id)))
+    const [datos, setDatos] = useState(() => perfilAFormulario(sesion))
     const [errores, setErrores] = useState({})
     const [errorGuardado, setErrorGuardado] = useState('')
     const [guardado, setGuardado] = useState(false)
@@ -68,7 +70,7 @@ function Perfil() {
         setGuardado(false)
     }
 
-    const enviar = (e) => {
+    const enviar = async (e) => {
         e.preventDefault()
 
         const erroresEncontrados = validar(datos)
@@ -77,11 +79,12 @@ function Perfil() {
         if (Object.keys(erroresEncontrados).length > 0) return
 
         const campos = {
+            telefono: datos.telefono.trim(),
             run: normalizarRun(datos.run),
             nombre: datos.nombre.trim(),
             apellidos: datos.apellidos.trim(),
             correo: datos.correo.trim(),
-            fechaNacimiento: datos.fechaNacimiento,
+            fechaNacimiento: datos.fechaNacimiento || null,
             tipoUsuario: datos.tipoUsuario,
             region: datos.region,
             comuna: datos.comuna,
@@ -91,9 +94,9 @@ function Perfil() {
         if (datos.contrasena) campos.contrasena = datos.contrasena
 
         try {
-            actualizarUsuario(sesion.id, campos)
+            await actualizarPerfil(campos)
 
-            refrescarSesion()
+            await refrescarSesion()
             setDatos((anterior) => ({ ...anterior, contrasena: '' }))
             setErrorGuardado('')
             setGuardado(true)
@@ -112,6 +115,7 @@ function Perfil() {
             {errorGuardado && <div className="alert alert-danger">{errorGuardado}</div>}
 
             <form onSubmit={enviar} noValidate className="card form-card p-4">
+                <Campo etiqueta="Teléfono" nombre="telefono" type="tel" valor={datos.telefono} error={errores.telefono} onChange={cambiar} />
                 <div className="row">
                     <div className="col-md-6">
                         <Campo 
