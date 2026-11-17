@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { leer, guardar } from '../utils/storage'
 import { useAuth } from '../hooks/useAuth'
-import { obtenerProductoPorId } from '../data/productos'
 
 const CarritoContext = createContext(null)
 
@@ -17,7 +16,7 @@ function obtenerCarritoPorClave(clave) {
     return Array.isArray(guardado) ? guardado : []
 }
 
-const stockDe = (id) => obtenerProductoPorId(id)?.stock ?? 0
+const stockDe = (lista, id) => lista.find((item) => item.id === id)?.stock ?? Infinity
 const unidadesDe = (lista, id) => lista.reduce((suma, item) => (item.id === id ? suma + item.cantidad : suma), 0)
 
 export function CarritoProvider({ children }) {
@@ -41,8 +40,10 @@ export function CarritoProvider({ children }) {
         const cantidadNum = Number(cantidad) || 1
         if (cantidadNum <= 0) return
 
-        setCarrito((anterior) => {
-            const disponible = stockDe(producto.id) - unidadesDe(anterior, producto.id)
+        setCarrito((previo) => {
+            const stock = producto.stock ?? Infinity
+            const anterior = previo.map((item) => (item.id === producto.id ? { ...item, stock } : item))
+            const disponible = stock - unidadesDe(anterior, producto.id)
             const cantidadFinal = Math.min(cantidadNum, disponible)
             if (cantidadFinal <= 0) return anterior
 
@@ -74,6 +75,7 @@ export function CarritoProvider({ children }) {
                     imagen,
                     talla,
                     color: colorActual ? { nombre: colorActual.nombre, clave: colorActual.clave } : null,
+                    stock: producto.stock ?? null,
                     cantidad: cantidadFinal,
                 },
             ]
@@ -118,7 +120,7 @@ export function CarritoProvider({ children }) {
             const item = copia[indice]
             if (!item) return anterior
 
-            const maximo = stockDe(item.id) - (unidadesDe(anterior, item.id) - item.cantidad)
+            const maximo = (item.stock ?? Infinity) - (unidadesDe(anterior, item.id) - item.cantidad)
             const nueva = Math.min(cantidadNum, maximo)
             if (nueva <= 0) return anterior
 
@@ -139,7 +141,7 @@ export function CarritoProvider({ children }) {
         return carrito.reduce((total, item) => total + item.cantidad, 0)
     }
 
-    const disponibleParaAgregar = (id) => Math.max(stockDe(id) - unidadesDe(carrito, id), 0)
+    const disponibleParaAgregar = (id, stock = stockDe(carrito, id)) => Math.max(stock - unidadesDe(carrito, id), 0)
 
     const unidadesEnCarrito = (id) => unidadesDe(carrito, id)
 

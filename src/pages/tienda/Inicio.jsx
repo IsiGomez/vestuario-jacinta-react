@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
-import { obtenerProductos } from '../../data/productos'
+import { obtenerProductosTienda } from '../../services/productoService'
+import { useRecurso } from '../../hooks/useRecurso'
 import Footer from '../../components/Footer'
 import TarjetaProducto from '../../components/TarjetaProducto'
 
 function Inicio() {
+    const { datos, cargando, error } = useRecurso(obtenerProductosTienda)
 
-    const productosDestacados = obtenerProductos()
+    const productosDestacados = (datos ?? [])
         .filter((p) => p.stock > 0)
         .sort((a, b) => a.stock - b.stock)
         .slice(0, 4)
@@ -49,9 +51,14 @@ function Inicio() {
                         <p className="text-muted mb-0">Los productos con menor stock</p>
                     </header>
 
-                    {productosDestacados.length === 0 ? (
+                    {error && <div role="alert" className="alert alert-danger text-center">{error}</div>}
+                    {cargando && <p role="status" className="text-center">Cargando productos...</p>}
+
+                    {!cargando && !error && productosDestacados.length === 0 && (
                         <div className="alert alert-info alert-tienda text-center">No hay productos con stock disponible.</div>
-                    ) : (
+                    )}
+
+                    {productosDestacados.length > 0 && (
                         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                             {productosDestacados.map((producto) => (
                                 <div className="col" key={producto.id}>

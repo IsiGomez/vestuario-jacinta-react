@@ -1,27 +1,32 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { obtenerProductosCriticos } from '../../data/productos'
+import { obtenerProductosCriticos } from '../../services/productoService'
+import { useRecurso } from '../../hooks/useRecurso'
 import MiniaturaImagen from '../../components/MiniaturaImagen';
 
 function ProductosCriticos() {
-    const [criticos] = useState(() => obtenerProductosCriticos().sort((a, b) => a.stock - b.stock))
+    const { datos, cargando, error } = useRecurso(obtenerProductosCriticos)
+    const criticos = datos ?? []
 
     return (
         <div className="pagina">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h1 className="h3 mb-0">Productos críticos</h1>
-                
+
                 <Link to="/admin/productos" className="btn btn-outline-secondary btn-sm">
                     <i className="bi bi-arrow-left me-1" /> Volver a productos
                 </Link>
             </div>
 
+            {error && <div role="alert" className="alert alert-danger">{error}</div>}
+            {cargando && <p role="status">Cargando productos críticos...</p>}
 
-            {criticos.length === 0 ? (
+            {!cargando && !error && criticos.length === 0 && (
                 <div className="alert alert-success">
                     Todos los productos tienen stock sobre su nivel crítico.
                 </div>
-            ) : (
+            )}
+
+            {criticos.length > 0 && (
                 <div className="table-responsive">
                     <table className="table table-hover align-middle">
                         <thead>

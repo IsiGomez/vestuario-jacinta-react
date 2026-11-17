@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { obtenerProductoPorId } from '../../data/productos'
+import { obtenerProductoTienda } from '../../services/productoService'
+import { useRecurso } from '../../hooks/useRecurso'
 import { useCarrito } from '../../context/CarritoContext'
 
 function DetalleProducto() {
     const { id } = useParams()
-    const producto = obtenerProductoPorId(id)
+    const { datos: producto, cargando } = useRecurso(obtenerProductoTienda, id)
     const { agregarProducto, disponibleParaAgregar, unidadesEnCarrito } = useCarrito()
 
     const [colorSeleccionado, setColorSeleccionado] = useState(0)
@@ -17,6 +18,8 @@ function DetalleProducto() {
     useEffect(() => {
         setImagenActiva(0)
     }, [colorSeleccionado, id])
+
+    if (cargando) return <p role="status" className="container py-5 text-center">Cargando producto...</p>
 
     if (!producto) {
         return (
@@ -35,7 +38,7 @@ function DetalleProducto() {
     const tallaActual = tallaSeleccionada ?? tallas[0] ?? null
 
     // El stock es por producto: se descuenta lo que ya hay en el carrito (de cualquier talla o color)
-    const disponible = disponibleParaAgregar(producto.id)
+    const disponible = disponibleParaAgregar(producto.id, producto.stock)
     const enCarrito = unidadesEnCarrito(producto.id)
     const cantidadElegida = Math.min(Math.max(cantidad, 1), Math.max(disponible, 1))
 
