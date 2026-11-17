@@ -1,11 +1,10 @@
-import { totalOrden, ESTADOS_ORDEN } from '../data/ordenes'
+import { ESTADOS_ORDEN } from './estadosOrden'
 
 export function resumenInventario(productos) {
     return {
         totalProductos: productos.length,
         unidades: productos.reduce((suma, p) => suma + p.stock, 0),
         valorInventario: productos.reduce((suma, p) => suma + p.precio * p.stock, 0),
-        criticos: productos.filter((p) => p.stock <= p.stockCritico).length,
     }
 }
 
@@ -29,13 +28,13 @@ export function inventarioPorCategoria(productos, categorias) {
 
 
 export function resumenVentas(ordenes) {
-    const pagadas = ordenes.filter((o) => o.estado === 'Pagada')
-    const montoTotal = pagadas.reduce((suma, o) => suma + totalOrden(o), 0)
+    const pagadas = ordenes.filter((o) => o.estado === 'PAGADA')
+    const montoTotal = pagadas.reduce((suma, o) => suma + o.total, 0)
 
     return {
         pagadas: pagadas.length,
-        fallidas: ordenes.filter((o) => o.estado === 'Pago fallido').length,
-        pendientes: ordenes.filter((o) => o.estado === 'Pendiente').length,
+        fallidas: ordenes.filter((o) => o.estado === 'PAGO_FALLIDO').length,
+        pendientes: ordenes.filter((o) => o.estado === 'PENDIENTE').length,
         montoTotal,
         ticketPromedio: pagadas.length === 0 ? 0 : Math.round(montoTotal / pagadas.length),
     }
@@ -46,7 +45,7 @@ export function productosMasVendidos(ordenes, limite = 5) {
     const ventas = {}
 
     ordenes
-        .filter((o) => o.estado === 'Pagada')
+        .filter((o) => o.estado === 'PAGADA')
         .forEach((o) => {
             o.items.forEach((item) => {
                 const actual = ventas[item.productoId] ?? { productoId: item.productoId, nombre: item.nombre, unidades: 0, monto: 0 }
@@ -89,12 +88,12 @@ export function ventasPorMes(ordenes, cantidadMeses = 6) {
     }
 
     ordenes
-        .filter((o) => o.estado === 'Pagada')
+        .filter((o) => o.estado === 'PAGADA')
         .forEach((o) => {
             const mes = meses.find((m) => m.clave === claveDe(new Date(o.fecha)))
 
             if (mes) {
-                mes.monto += totalOrden(o)
+                mes.monto += o.total
                 mes.ordenes += 1
             }
         })

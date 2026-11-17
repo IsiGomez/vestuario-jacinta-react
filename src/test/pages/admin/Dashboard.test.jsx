@@ -1,17 +1,26 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { act, render, screen, within } from '@testing-library/react'
+import { act, render, screen, within, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import Dashboard from '../../../pages/admin/Dashboard'
 import { AuthContext } from '../../../context/authContext'
-import { waitFor } from '@testing-library/react'
+import * as ordenes from '../../../services/ordenService'
+import * as productos from '../../../services/productoService'
+import { ordenesDeLaApi, orden1 } from '../../fixtures/ordenes'
+import { productosIniciales, camisaLargaHombre, camisaCortaMujer } from '../../fixtures/productos'
+import { precio, tarjeta } from '../../helpers'
+
 const fixture = vi.hoisted(() => ({ usuarios: [] }))
 vi.mock('../../../services/usuarioService', () => ({ obtenerUsuarios: vi.fn(async () => fixture.usuarios) }))
+vi.mock('../../../services/ordenService', () => ({ obtenerOrdenes: vi.fn() }))
+vi.mock('../../../services/productoService', () => ({ obtenerProductos: vi.fn(), obtenerProductosCriticos: vi.fn() }))
+
 const crearUsuario = (u) => fixture.usuarios.push({ ...u, tipoUsuario: u.tipoUsuario.toUpperCase() })
-import { actualizarProducto, obtenerProductos } from '../../../data/productos'
-import { precio, tarjeta } from '../../helpers'
 
 beforeEach(() => {
     fixture.usuarios = []
+    ordenes.obtenerOrdenes.mockResolvedValue(ordenesDeLaApi)
+    productos.obtenerProductos.mockResolvedValue(productosIniciales)
+    productos.obtenerProductosCriticos.mockResolvedValue([camisaLargaHombre]) // el servidor decide qué es crítico
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-10-22T12:00:00'))
 })
@@ -28,6 +37,7 @@ const renderizar = async () => {
             </AuthContext.Provider>
         )
     })
+    await waitFor(() => expect(screen.queryByText('Cargando resumen...')).not.toBeInTheDocument())
     return vista
 }
 
@@ -61,10 +71,16 @@ describe('Dashboard - tarjetas resumen', () => {
         expect(tarjeta('Órdenes')).toHaveTextContent('3 pagadas · 0 pendientes · 1 fallidas')
     })
 
-    it('Productos críticos: cantidad sobre el total de productos', async () => {
+    it('Productos críticos: la cantidad la entrega el servidor, sobre el total de productos', async () => {
         await renderizar()
         expect(tarjetaPorTitulo('Productos críticos').getByText('1')).toBeInTheDocument()
         expect(tarjeta('Productos críticos')).toHaveTextContent('de 4 productos')
+    })
+
+    it('el total de productos no cuenta los inactivos', async () => {
+        productos.obtenerProductos.mockResolvedValue([...productosIniciales.slice(0, 3), { ...productosIniciales[3], activo: false }])
+        await renderizar()
+        expect(tarjeta('Productos críticos')).toHaveTextContent('de 3 productos')
     })
 
     it('Clientes: solo cuenta usuarios de tipo Cliente', async () => {
@@ -106,7 +122,7 @@ describe('Dashboard - gráfico de ventas por mes', () => {
 
 
 describe('Dashboard - órdenes por estado y más vendidos', () => {
-    it('lista cada estado con su cantidad', async () => {
+    it('lista cada estado con su etiqueta y su cantidad', async () => {
         await renderizar()
         const lista = screen.getByText('Pago fallido', { selector: 'li > span' }).closest('ul')
         expect(within(lista).getByText('Pagada').closest('li')).toHaveTextContent('3')
@@ -120,6 +136,7 @@ describe('Dashboard - órdenes por estado y más vendidos', () => {
         expect(segmentos).toHaveLength(3)
         expect(segmentos[0]).toHaveStyle({ width: '75%' }) // 3 de 4 pagadas
         expect(segmentos[0]).toHaveClass('bg-success')
+        expect(segmentos[0]).toHaveAttribute('title', 'Pagada: 3')
     })
 
     it('lista los más vendidos con sus unidades (solo órdenes pagadas)', async () => {
@@ -132,7 +149,7 @@ describe('Dashboard - órdenes por estado y más vendidos', () => {
     })
 
     it('sin órdenes muestra los mensajes vacíos', async () => {
-        localStorage.setItem('jacinta_ordenes', '[]')
+        ordenes.obtenerOrdenes.mockResolvedValue([])
         await renderizar()
         expect(screen.getByText('Sin ventas registradas.')).toBeInTheDocument()
         expect(screen.getAllByText('Todavía no hay órdenes.')).toHaveLength(2) // tarjeta de estados + tabla
@@ -142,7 +159,7 @@ describe('Dashboard - órdenes por estado y más vendidos', () => {
 
 
 describe('Dashboard - últimas órdenes', () => {
-    it('muestra las órdenes de la más reciente a la más antigua con enlace a su boleta', async () => {
+    it('muestra las órdenes en el orden del servidor (la más reciente primero) con enlace a su boleta', async () => {
         await renderizar()
         const tabla = screen.getByText('Últimas órdenes').closest('.card-body')
         const numeros = within(tabla).getAllByText(/^#/).map((n) => n.textContent)
@@ -154,13 +171,8 @@ describe('Dashboard - últimas órdenes', () => {
     })
 
     it('muestra como máximo 5 órdenes', async () => {
-        const base = JSON.parse(JSON.stringify([{
-            id: 1, numero: '1', fecha: '2026-10-01T10:00:00', usuarioId: null, estado: 'Pagada',
-            cliente: { nombre: 'A', apellidos: 'B', correo: 'a@gmail.com' }, entrega: {},
-            items: [{ productoId: 1, nombre: 'X', precio: 1000, cantidad: 1 }],
-        }]))
-        const siete = Array.from({ length: 7 }, (_, i) => ({ ...base[0], id: i + 1, numero: String(1000 + i) }))
-        localStorage.setItem('jacinta_ordenes', JSON.stringify(siete))
+        const siete = Array.from({ length: 7 }, (_, i) => ({ ...orden1, id: i + 1, numero: String(1000 + i) }))
+        ordenes.obtenerOrdenes.mockResolvedValue(siete)
         await renderizar()
 
         const tabla = screen.getByText('Últimas órdenes').closest('.card-body')
@@ -184,8 +196,8 @@ describe('Dashboard - stock crítico', () => {
         expect(within(tarjetaCriticos).getByRole('link', { name: 'Editar' })).toHaveAttribute('href', '/admin/productos/2/editar')
     })
 
-    it('marca "Agotado" y ordena primero los de menor stock', async () => {
-        actualizarProducto(3, { stock: 0 })
+    it('marca "Agotado" y respeta el orden del servidor (menor stock primero)', async () => {
+        productos.obtenerProductosCriticos.mockResolvedValue([{ ...camisaCortaMujer, stock: 0 }, camisaLargaHombre])
         await renderizar()
         const tarjetaCriticos = screen.getByText('Stock crítico').closest('.card-body')
         const nombres = within(tarjetaCriticos).getAllByRole('listitem').map((li) => li.querySelector('.fw-semibold').textContent)
@@ -193,8 +205,17 @@ describe('Dashboard - stock crítico', () => {
         expect(within(tarjetaCriticos).getByText('Agotado')).toBeInTheDocument()
     })
 
-    it('si no hay críticos muestra el mensaje de éxito', async () => {
-        obtenerProductos().forEach((p) => actualizarProducto(p.id, { stock: 100 }))
+    it('muestra como máximo 5 críticos', async () => {
+        productos.obtenerProductosCriticos.mockResolvedValue(
+            Array.from({ length: 7 }, (_, i) => ({ ...camisaLargaHombre, id: i + 1, nombre: `Producto ${i + 1}` })))
+        await renderizar()
+        const tarjetaCriticos = screen.getByText('Stock crítico').closest('.card-body')
+        expect(within(tarjetaCriticos).getAllByRole('listitem')).toHaveLength(5)
+        expect(tarjeta('Productos críticos')).toHaveTextContent('7') // la tarjeta cuenta todos los del servidor
+    })
+
+    it('si el servidor no informa críticos muestra el mensaje de éxito (no recalcula con el stock)', async () => {
+        productos.obtenerProductosCriticos.mockResolvedValue([])
         await renderizar()
         expect(screen.getByText('Todos los productos tienen stock sobre su nivel crítico.')).toBeInTheDocument()
     })

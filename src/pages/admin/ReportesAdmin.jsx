@@ -1,21 +1,22 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { obtenerOrdenes } from '../../data/ordenes'
+import { obtenerOrdenes } from '../../services/ordenService'
+import { useRecurso } from '../../hooks/useRecurso'
 import { resumenVentas, productosMasVendidos } from '../../utils/reportes'
 import { formatearPrecio } from '../../utils/formato'
 import TarjetaResumen from '../../components/TarjetaResumen'
 
 function ReportesAdmin() {
-    const [reporte] = useState(() => {
-        const ordenes = obtenerOrdenes()
+    const { datos, cargando, error } = useRecurso(obtenerOrdenes)
+
+    const { ventas, masVendidos } = useMemo(() => {
+        const ordenes = datos ?? []
 
         return {
             ventas: resumenVentas(ordenes),
             masVendidos: productosMasVendidos(ordenes),
         }
-    })
-
-    const { ventas, masVendidos } = reporte
+    }, [datos])
 
     return (
         <div className="pagina">
@@ -31,6 +32,9 @@ function ReportesAdmin() {
                     </Link>
                 </div>
             </div>
+
+            {error && <div role="alert" className="alert alert-danger">{error}</div>}
+            {cargando && <p role="status">Cargando reporte...</p>}
 
             <div className="row g-3 mb-4">
                 <div className="col-12 col-sm-6 col-lg-3">
@@ -70,7 +74,7 @@ function ReportesAdmin() {
                             </tr>
                         ))}
 
-                        {masVendidos.length === 0 && (
+                        {!cargando && !error && masVendidos.length === 0 && (
                             <tr>
                                 <td colSpan={3} className="text-center text-muted py-4">
                                     Todavía no hay ventas registradas.

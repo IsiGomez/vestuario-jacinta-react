@@ -1,13 +1,15 @@
 import { useRecurso } from '../../hooks/useRecurso'
 import { Link, useParams } from 'react-router-dom'
 import { obtenerUsuarioPorId } from '../../services/usuarioService'
-import { obtenerOrdenesDeUsuario, totalOrden } from '../../data/ordenes'
+import { obtenerOrdenesDeUsuario } from '../../services/ordenService'
+import { COLOR_ESTADO, etiquetaEstado } from '../../utils/estadosOrden'
 import { formatearPrecio, formatearFecha } from '../../utils/formato'
 import TarjetaResumen from '../../components/TarjetaResumen'
 
 function HistorialCompras() {
     const { id } = useParams()
     const { datos: usuario, cargando, error } = useRecurso(obtenerUsuarioPorId, id)
+    const { datos: listaOrdenes, cargando: cargandoOrdenes, error: errorOrdenes } = useRecurso(obtenerOrdenesDeUsuario, id)
 
     if (cargando) return <p role="status">Cargando usuario...</p>
     if (error) return <div role="alert">{error}</div>
@@ -20,9 +22,9 @@ function HistorialCompras() {
         )
     }
 
-    const ordenes = obtenerOrdenesDeUsuario(usuario).sort((a, b) => b.fecha.localeCompare(a.fecha))
-    const pagadas = ordenes.filter((o) => o.estado === 'Pagada')
-    const totalGastado = pagadas.reduce((suma, o) => suma + totalOrden(o), 0)
+    const ordenes = listaOrdenes ?? []
+    const pagadas = ordenes.filter((o) => o.estado === 'PAGADA')
+    const totalGastado = pagadas.reduce((suma, o) => suma + o.total, 0)
 
     return (
         <div className="pagina">
@@ -46,9 +48,14 @@ function HistorialCompras() {
                 </div>
             </div>
 
-            {ordenes.length === 0 ? (
+            {errorOrdenes && <div role="alert" className="alert alert-danger">{errorOrdenes}</div>}
+            {cargandoOrdenes && <p role="status">Cargando compras...</p>}
+
+            {!cargandoOrdenes && !errorOrdenes && ordenes.length === 0 && (
                 <div className="alert alert-info">Este usuario todavía no tiene compras.</div>
-            ) : (
+            )}
+
+            {ordenes.length > 0 && (
                 <div className="table-responsive">
                     <table className="table table-hover align-middle">
                         <thead>
@@ -66,10 +73,10 @@ function HistorialCompras() {
                                 <tr key={o.id}>
                                     <td>#{o.numero}</td>
                                     <td>{formatearFecha(o.fecha)}</td>
-                                    <td>{formatearPrecio(totalOrden(o))}</td>
+                                    <td>{formatearPrecio(o.total)}</td>
                                     <td>
-                                        <span className={`badge text-bg-${o.estado === 'Pagada' ? 'success' : o.estado === 'Pago fallido' ? 'danger' : 'warning'}`}>
-                                            {o.estado}
+                                        <span className={`badge text-bg-${COLOR_ESTADO[o.estado]}`}>
+                                            {etiquetaEstado(o.estado)}
                                         </span>
                                     </td>
                                     <td className="text-end">

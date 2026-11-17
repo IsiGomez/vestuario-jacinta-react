@@ -14,15 +14,17 @@ afterEach(() => {
 
 const producto = (extra) => ({ id: 1, categoriaId: 1, precio: 1000, stock: 10, stockCritico: 3, ...extra })
 const item = (productoId, nombre, precio, cantidad) => ({ productoId, nombre, precio, cantidad })
-const orden = (id, estado, items, fecha = '2026-10-01T10:00:00') => ({ id, estado, items, fecha })
+const orden = (id, estado, items, fecha = '2026-10-01T10:00:00') => ({
+    id, estado, items, fecha, total: items.reduce((suma, i) => suma + i.precio * i.cantidad, 0),
+})
 
 
 describe('resumenInventario', () => {
     it('devuelve ceros con una lista vacía', () => {
-        expect(resumenInventario([])).toEqual({ totalProductos: 0, unidades: 0, valorInventario: 0, criticos: 0 })
+        expect(resumenInventario([])).toEqual({ totalProductos: 0, unidades: 0, valorInventario: 0 })
     })
 
-    it('suma unidades, valor (precio × stock) y cuenta los críticos', () => {
+    it('suma unidades y valor (precio × stock); los críticos los decide el servidor', () => {
         const productos = [
             producto({ id: 1, precio: 1000, stock: 10, stockCritico: 3 }),
             producto({ id: 2, precio: 2000, stock: 3, stockCritico: 3 }), // borde: crítico
@@ -32,7 +34,6 @@ describe('resumenInventario', () => {
             totalProductos: 3,
             unidades: 13,
             valorInventario: 10000 + 6000 + 0,
-            criticos: 2,
         })
     })
 })
@@ -78,21 +79,26 @@ describe('resumenVentas', () => {
 
     it('solo suma el monto de las órdenes pagadas y cuenta cada estado', () => {
         const ordenes = [
-            orden(1, 'Pagada', [item(1, 'A', 1000, 2)]),   // 2000
-            orden(2, 'Pagada', [item(1, 'A', 1000, 1)]),   // 1000
-            orden(3, 'Pago fallido', [item(1, 'A', 9999, 1)]),
-            orden(4, 'Pendiente', [item(1, 'A', 9999, 1)]),
+            orden(1, 'PAGADA', [item(1, 'A', 1000, 2)]),   // 2000
+            orden(2, 'PAGADA', [item(1, 'A', 1000, 1)]),   // 1000
+            orden(3, 'PAGO_FALLIDO', [item(1, 'A', 9999, 1)]),
+            orden(4, 'PENDIENTE', [item(1, 'A', 9999, 1)]),
         ]
         expect(resumenVentas(ordenes)).toEqual({
             pagadas: 2, fallidas: 1, pendientes: 1, montoTotal: 3000, ticketPromedio: 1500,
         })
     })
 
+    it('usa el total que calcula el servidor en vez de recalcularlo', () => {
+        const ordenes = [{ ...orden(1, 'PAGADA', [item(1, 'A', 1000, 2)]), total: 777 }]
+        expect(resumenVentas(ordenes).montoTotal).toBe(777)
+    })
+
     it('redondea el ticket promedio', () => {
         const ordenes = [
-            orden(1, 'Pagada', [item(1, 'A', 100, 1)]),
-            orden(2, 'Pagada', [item(1, 'A', 100, 1)]),
-            orden(3, 'Pagada', [item(1, 'A', 101, 1)]),
+            orden(1, 'PAGADA', [item(1, 'A', 100, 1)]),
+            orden(2, 'PAGADA', [item(1, 'A', 100, 1)]),
+            orden(3, 'PAGADA', [item(1, 'A', 101, 1)]),
         ]
         expect(resumenVentas(ordenes).ticketPromedio).toBe(100) // 301 / 3 = 100.33
     })
@@ -101,9 +107,9 @@ describe('resumenVentas', () => {
 
 describe('productosMasVendidos', () => {
     const ordenes = [
-        orden(1, 'Pagada', [item(1, 'Camisa', 1000, 2), item(2, 'Polerón', 3000, 1)]),
-        orden(2, 'Pagada', [item(1, 'Camisa', 1000, 3)]),
-        orden(3, 'Pago fallido', [item(2, 'Polerón', 3000, 50)]),
+        orden(1, 'PAGADA', [item(1, 'Camisa', 1000, 2), item(2, 'Polerón', 3000, 1)]),
+        orden(2, 'PAGADA', [item(1, 'Camisa', 1000, 3)]),
+        orden(3, 'PAGO_FALLIDO', [item(2, 'Polerón', 3000, 50)]),
     ]
 
     it('acumula unidades y monto por producto, ordenados por unidades', () => {
@@ -123,7 +129,7 @@ describe('productosMasVendidos', () => {
     })
 
     it('el límite por defecto es 5', () => {
-        const muchas = [orden(1, 'Pagada', [1, 2, 3, 4, 5, 6, 7].map((n) => item(n, `P${n}`, 100, 1)))]
+        const muchas = [orden(1, 'PAGADA', [1, 2, 3, 4, 5, 6, 7].map((n) => item(n, `P${n}`, 100, 1)))]
         expect(productosMasVendidos(muchas)).toHaveLength(5)
     })
 
@@ -135,11 +141,11 @@ describe('productosMasVendidos', () => {
 
 describe('ordenesPorEstado', () => {
     it('devuelve una entrada por cada estado, incluso con cantidad 0', () => {
-        const ordenes = [orden(1, 'Pagada', []), orden(2, 'Pagada', []), orden(3, 'Pago fallido', [])]
+        const ordenes = [orden(1, 'PAGADA', []), orden(2, 'PAGADA', []), orden(3, 'PAGO_FALLIDO', [])]
         expect(ordenesPorEstado(ordenes)).toEqual([
-            { estado: 'Pagada', cantidad: 2 },
-            { estado: 'Pago fallido', cantidad: 1 },
-            { estado: 'Pendiente', cantidad: 0 },
+            { estado: 'PAGADA', cantidad: 2 },
+            { estado: 'PAGO_FALLIDO', cantidad: 1 },
+            { estado: 'PENDIENTE', cantidad: 0 },
         ])
     })
 })
@@ -177,11 +183,11 @@ describe('ventasPorMes', () => {
     it('suma solo órdenes pagadas dentro de la ventana, en su mes', () => {
         fijarHoy()
         const ordenes = [
-            orden(1, 'Pagada', [item(1, 'A', 1000, 1)], '2026-10-02T10:00:00'),
-            orden(2, 'Pagada', [item(1, 'A', 1000, 2)], '2026-10-15T10:00:00'),
-            orden(3, 'Pagada', [item(1, 'A', 500, 1)], '2026-09-01T10:00:00'),
-            orden(4, 'Pago fallido', [item(1, 'A', 9999, 1)], '2026-10-03T10:00:00'),
-            orden(5, 'Pagada', [item(1, 'A', 9999, 1)], '2020-01-01T10:00:00'), // fuera de la ventana
+            orden(1, 'PAGADA', [item(1, 'A', 1000, 1)], '2026-10-02T10:00:00'),
+            orden(2, 'PAGADA', [item(1, 'A', 1000, 2)], '2026-10-15T10:00:00'),
+            orden(3, 'PAGADA', [item(1, 'A', 500, 1)], '2026-09-01T10:00:00'),
+            orden(4, 'PAGO_FALLIDO', [item(1, 'A', 9999, 1)], '2026-10-03T10:00:00'),
+            orden(5, 'PAGADA', [item(1, 'A', 9999, 1)], '2020-01-01T10:00:00'), // fuera de la ventana
         ]
         const meses = ventasPorMes(ordenes)
         expect(meses.at(-1)).toMatchObject({ clave: '2026-9', monto: 3000, ordenes: 2 })

@@ -1,15 +1,22 @@
 import { Link, useParams } from 'react-router-dom'
-import { obtenerOrdenPorId, totalOrden } from '../../data/ordenes'
+import { obtenerOrdenPorId } from '../../services/ordenService'
+import { useRecurso } from '../../hooks/useRecurso'
+import { COLORES } from '../../utils/catalogo'
+import { COLOR_ESTADO, etiquetaEstado } from '../../utils/estadosOrden'
 import { formatearPrecio, formatearFecha } from '../../utils/formato'
 
 function BoletaAdmin() {
     const { id } = useParams()
-    const orden = obtenerOrdenPorId(id)
+    const { datos: orden, cargando, error } = useRecurso(obtenerOrdenPorId, id)
+
+    if (cargando) return <p role="status">Cargando boleta...</p>
 
     if (!orden) {
         return (
             <div>
-                <div className="alert alert-warning">No existe una orden con id {id}.</div>
+                <div role="alert" className="alert alert-warning">
+                    {error === 'Orden no encontrada' ? `No existe una orden con id ${id}.` : error}
+                </div>
                 <Link to="/admin/ordenes" className="btn btn-outline-secondary">Volver a órdenes</Link>
             </div>
         )
@@ -25,8 +32,8 @@ function BoletaAdmin() {
                     <div className="text-muted">{formatearFecha(orden.fecha)}</div>
                 </div>
 
-                <span className={`badge fs-6 ${orden.estado === 'Pagada' ? 'bg-success' : 'bg-danger'}`}>
-                    {orden.estado}
+                <span className={`badge fs-6 bg-${COLOR_ESTADO[orden.estado]}`}>
+                    {etiquetaEstado(orden.estado)}
                 </span>
             </div>
 
@@ -78,7 +85,7 @@ function BoletaAdmin() {
                                     {item.nombre}
                                     {(item.talla || item.color) && (
                                         <div className="small text-muted">
-                                            {[item.talla && `Talla ${item.talla}`, item.color && `Color ${item.color}`].filter(Boolean).join(' · ')}
+                                            {[item.talla && `Talla ${item.talla}`, item.color && `Color ${COLORES[item.color] ?? item.color}`].filter(Boolean).join(' · ')}
                                         </div>
                                     )}
                                 </td>
@@ -92,7 +99,7 @@ function BoletaAdmin() {
                     <tfoot>
                         <tr>
                             <th colSpan={3} className="text-end">Total</th>
-                            <th className="text-end">{formatearPrecio(totalOrden(orden))}</th>
+                            <th className="text-end">{formatearPrecio(orden.total)}</th>
                         </tr>
                     </tfoot>
                 </table>

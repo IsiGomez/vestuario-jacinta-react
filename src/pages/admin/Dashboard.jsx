@@ -1,9 +1,10 @@
 import { useRecurso } from '../../hooks/useRecurso'
-import { useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
-import { obtenerOrdenes, totalOrden } from '../../data/ordenes'
-import { obtenerProductos } from '../../data/productos'
+import { obtenerOrdenes } from '../../services/ordenService'
+import { obtenerProductos, obtenerProductosCriticos } from '../../services/productoService'
+import { COLOR_ESTADO, etiquetaEstado } from '../../utils/estadosOrden'
 import { obtenerUsuarios } from '../../services/usuarioService'
 import {
     resumenVentas,
@@ -15,35 +16,34 @@ import {
 import { formatearPrecio, formatearFecha } from '../../utils/formato'
 import TarjetaResumen from '../../components/TarjetaResumen'
 
-const COLOR_ESTADO = {
-    'Pagada': 'success',
-    'Pago fallido': 'danger',
-    'Pendiente': 'warning',
-}
-
 function Dashboard() {
     const { usuario } = useAuth()
     const { datos: usuarios, error: errorUsuarios } = useRecurso(obtenerUsuarios)
     const clientes = usuarios?.filter((u) => u.tipoUsuario === 'CLIENTE').length ?? 0
 
-    const [datos] = useState(() => {
-        const ordenes = obtenerOrdenes()
-        const productos = obtenerProductos()
+    const ordenesR = useRecurso(obtenerOrdenes)
+    const productosR = useRecurso(obtenerProductos)
+    const criticosR = useRecurso(obtenerProductosCriticos)
+
+    const datos = useMemo(() => {
+        const ordenes = ordenesR.datos ?? []
+        const productos = (productosR.datos ?? []).filter((p) => p.activo)
+        const criticos = criticosR.datos ?? []
 
         return {
             totalOrdenes: ordenes.length,
             ventas: resumenVentas(ordenes),
-            inventario: resumenInventario(productos),
+            inventario: { ...resumenInventario(productos), criticos: criticos.length },
             porMes: ventasPorMes(ordenes, 6),
             porEstado: ordenesPorEstado(ordenes),
             masVendidos: productosMasVendidos(ordenes, 3),
-            recientes: [...ordenes].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 5),
-            criticos: productos
-                .filter((p) => p.stock <= p.stockCritico)
-                .sort((a, b) => a.stock - b.stock)
-                .slice(0, 5),
+            recientes: ordenes.slice(0, 5), // la API ya las entrega de la más reciente a la más antigua
+            criticos: criticos.slice(0, 5), // y los críticos del menor stock al mayor
         }
-    })
+    }, [ordenesR.datos, productosR.datos, criticosR.datos])
+
+    const cargando = ordenesR.cargando || productosR.cargando || criticosR.cargando
+    const errores = [errorUsuarios, ordenesR.error, productosR.error, criticosR.error].filter(Boolean)
 
     const { totalOrdenes, ventas, inventario, porMes, porEstado, masVendidos, recientes, criticos } = datos
     const maxMonto = Math.max(...porMes.map((m) => m.monto), 1)
@@ -66,7 +66,8 @@ function Dashboard() {
                 </div>
             </div>
 
-            {errorUsuarios && <div role="alert">{errorUsuarios}</div>}
+            {errores.map((mensaje) => <div key={mensaje} role="alert" className="alert alert-danger">{mensaje}</div>)}
+            {cargando && <p role="status">Cargando resumen...</p>}
             <div className="row g-3 mb-4">
                 <div className="col-12 col-sm-6 col-xl-3">
                     <TarjetaResumen
@@ -153,7 +154,7 @@ function Dashboard() {
                                                 key={e.estado}
                                                 className={`progress-bar bg-${COLOR_ESTADO[e.estado]}`}
                                                 style={{ width: `${(e.cantidad / totalOrdenes) * 100}%` }}
-                                                title={`${e.estado}: ${e.cantidad}`}
+                                                title={`${etiquetaEstado(e.estado)}: ${e.cantidad}`}
                                             />
                                         ))}
                                     </div>
@@ -163,7 +164,7 @@ function Dashboard() {
                                             <li key={e.estado} className="d-flex justify-content-between">
                                                 <span>
                                                     <span className={`badge bg-${COLOR_ESTADO[e.estado]} me-2`}>&nbsp;</span>
-                                                    {e.estado}
+                                                    {etiquetaEstado(e.estado)}
                                                 </span>
                                                 <span className="fw-semibold">{e.cantidad}</span>
                                             </li>
@@ -216,10 +217,10 @@ function Dashboard() {
                                                 <td className="fw-semibold">#{o.numero}</td>
                                                 <td>{o.cliente.nombre} {o.cliente.apellidos}</td>
                                                 <td>{formatearFecha(o.fecha)}</td>
-                                                <td>{formatearPrecio(totalOrden(o))}</td>
+                                                <td>{formatearPrecio(o.total)}</td>
                                                 <td className="text-center">
                                                     <span className={`badge text-bg-${COLOR_ESTADO[o.estado] ?? 'secondary'}`}>
-                                                        {o.estado}
+                                                        {etiquetaEstado(o.estado)}
                                                     </span>
                                                 </td>
                                                 <td className="text-end">

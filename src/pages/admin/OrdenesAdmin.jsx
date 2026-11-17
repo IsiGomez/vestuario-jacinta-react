@@ -1,22 +1,28 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { obtenerOrdenes, totalOrden, ESTADOS_ORDEN, actualizarEstadoOrden } from '../../data/ordenes'
+import { obtenerOrdenes, actualizarEstadoOrden } from '../../services/ordenService'
+import { useRecurso } from '../../hooks/useRecurso'
+import { useAuth } from '../../hooks/useAuth'
+import { ESTADOS_ORDEN, COLOR_ESTADO, etiquetaEstado } from '../../utils/estadosOrden'
 import { formatearPrecio, formatearFecha } from '../../utils/formato'
 
 function OrdenesAdmin() {
-    const [ordenes, setOrdenes] = useState(() => [...obtenerOrdenes()].sort((a, b) => b.fecha.localeCompare(a.fecha)))
+    const { datos, cargando, error: errorCarga, recargar } = useRecurso(obtenerOrdenes)
+    const { puede } = useAuth()
     const [filtroEstado, setFiltroEstado] = useState('')
     const [error, setError] = useState('')
 
+    const ordenes = datos ?? []
     const visibles = filtroEstado ? ordenes.filter((o) => o.estado === filtroEstado) : ordenes
 
-    const cambiarEstado = (id, nuevoEstado) => {
+    const cambiarEstado = async (id, nuevoEstado) => {
         try {
-            actualizarEstadoOrden(id, nuevoEstado)
-            setOrdenes([...obtenerOrdenes()].sort((a, b) => b.fecha.localeCompare(a.fecha)))
+            await actualizarEstadoOrden(id, nuevoEstado)
             setError('')
         } catch (err) {
             setError(err.message)
+        } finally {
+            recargar()
         }
     }
 
@@ -33,12 +39,13 @@ function OrdenesAdmin() {
                 >
                     <option value="">Todos los estados</option>
                     {ESTADOS_ORDEN.map((estado) => (
-                        <option key={estado} value={estado}>{estado}</option>
+                        <option key={estado} value={estado}>{etiquetaEstado(estado)}</option>
                     ))}
                 </select>
             </div>
 
-            {error && <div className="alert alert-danger">{error}</div>}
+            {(error || errorCarga) && <div role="alert" className="alert alert-danger">{error || errorCarga}</div>}
+            {cargando && <p role="status">Cargando órdenes...</p>}
 
             <div className="table-responsive">
                 <table className="table table-hover align-middle">
@@ -61,24 +68,19 @@ function OrdenesAdmin() {
                                     {o.cliente.nombre} {o.cliente.apellidos}
                                     <div className="small text-muted">{o.cliente.correo}</div>
                                 </td>
-                                <td className="text-start">{formatearPrecio(totalOrden(o))}</td>
+                                <td className="text-start">{formatearPrecio(o.total)}</td>
                                 <td>
                                     <div className="d-flex ordenes-estado">
                                         <select
-                                            className={`form-select form-select-sm fw-semibold ${
-                                                o.estado === 'Pagada' 
-                                                    ? 'text-success border-success' 
-                                                    : o.estado === 'Pago fallido' 
-                                                    ? 'text-danger border-danger' 
-                                                    : 'text-warning border-warning'
-                                            }`}
+                                            className={`form-select form-select-sm fw-semibold text-${COLOR_ESTADO[o.estado]} border-${COLOR_ESTADO[o.estado]}`}
                                             value={o.estado}
                                             onChange={(e) => cambiarEstado(o.id, e.target.value)}
+                                            disabled={!puede('ordenes:cambiar-estado')}
                                             aria-label="Cambiar estado de orden"
                                         >
                                             {ESTADOS_ORDEN.map((est) => (
                                                 <option key={est} value={est} className="text-dark">
-                                                    {est}
+                                                    {etiquetaEstado(est)}
                                                 </option>
                                             ))}
                                         </select>
@@ -92,7 +94,7 @@ function OrdenesAdmin() {
                             </tr>
                         ))}
 
-                        {visibles.length === 0 && (
+                        {!cargando && !errorCarga && visibles.length === 0 && (
                             <tr>
                                 <td colSpan={6} className="text-center text-muted py-4">
                                     No hay órdenes para mostrar.
