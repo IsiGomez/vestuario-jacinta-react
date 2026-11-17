@@ -1,14 +1,18 @@
 import { useRecurso } from '../../hooks/useRecurso'
 import { Link, useParams } from 'react-router-dom'
 import { obtenerCategorias } from '../../services/categoriaService'
-import { obtenerProductos, disponiblesPrimero } from '../../data/productos'
+import { obtenerProductosTienda } from '../../services/productoService'
+import { disponiblesPrimero } from '../../utils/catalogo'
 import TarjetaProducto from '../../components/TarjetaProducto'
 import EncabezadoPagina from '../../components/EncabezadoPagina'
 
 function Categoria() {
     const { categoria } = useParams()
     const nombreCategoria = decodeURIComponent(categoria || '')
-    const { datos, cargando, error } = useRecurso(obtenerCategorias)
+    const { datos, cargando: cargandoCategorias, error: errorCategorias } = useRecurso(obtenerCategorias)
+    const { datos: listaProductos, cargando: cargandoProductos, error: errorProductos } = useRecurso(obtenerProductosTienda)
+    const cargando = cargandoCategorias || cargandoProductos
+    const error = errorCategorias || errorProductos
     const categorias = datos ?? []
     const categoriaEncontrada = categorias.find(
         (c) => c.nombre.toLowerCase() === nombreCategoria.toLowerCase()
@@ -26,7 +30,7 @@ function Categoria() {
     }
 
     const productos = disponiblesPrimero(
-        obtenerProductos().filter((p) => p.categoriaId === categoriaEncontrada.id)
+        (listaProductos ?? []).filter((p) => p.categoriaId === categoriaEncontrada.id)
     )
 
     return (
