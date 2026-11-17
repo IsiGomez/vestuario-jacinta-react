@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { validarTexto, validarPrecio, validarEnteroNoNegativo, validarRequerido } from '../../utils/validaciones'
-import { obtenerCategorias } from '../../data/categorias'
-import { crearProducto, obtenerProductos, color, TIPOS, COLORES, COLORES_CON_FOTOS, TALLAS, actualizarProducto, obtenerProductoPorId } from '../../data/productos'
+import { obtenerCategorias } from '../../services/categoriaService'
+import { crearProducto, actualizarProducto, obtenerProductoPorId } from '../../services/productoService'
+import { TIPOS, COLORES, COLORES_CON_FOTOS, TALLAS } from '../../utils/catalogo'
+import { useRecurso } from '../../hooks/useRecurso'
 import Campo from '../../components/Campo'
 
 const VALORES_INICIALES = {
@@ -15,6 +17,7 @@ const VALORES_INICIALES = {
     stockCritico: '',
     descripcion: '',
     colores: [],
+    activo: true,
 }
 
 
@@ -28,18 +31,16 @@ const productoAFormulario = (p) => ({
     stockCritico: String(p.stockCritico),
     descripcion: p.descripcion,
     colores: p.colores ? p.colores.map((c) => c.clave) : [],
+    activo: p.activo !== false,
 })
 
 
-function validar(datos, idActual = null) {
+function validar(datos) {
     const errores = {
         nombre: validarTexto(datos.nombre, { campo: 'El nombre', min: 3, max: 80 }),
         categoriaId: validarRequerido(datos.categoriaId, 'La categoría'),
         genero: validarRequerido(datos.genero, 'El género'),
-        tipo: validarRequerido(datos.tipo, 'El tipo') ||
-            (obtenerProductos().some((p) => p.genero === datos.genero && p.tipo === datos.tipo & p.id !== Number(idActual))
-            ? 'Ya existe un producto de este género y tipo. Edítalo para cambiar sus colores.'
-            : null),
+        tipo: validarRequerido(datos.tipo, 'El tipo'),
         colores: datos.colores.length === 0 ? 'Elige al menos un color' : null,
         precio: validarPrecio(datos.precio),
         stock: validarEnteroNoNegativo(datos.stock, 'El stock'),
@@ -51,27 +52,14 @@ function validar(datos, idActual = null) {
 }
 
 
-function ProductoFormulario() {
+function Formulario({ id, producto, categorias }) {
     const navegar = useNavigate()
-
-    const { id } = useParams()
     const esEdicion = id !== undefined
-    const producto = esEdicion ? obtenerProductoPorId(id) : null
 
     const [datos, setDatos] = useState(producto ? productoAFormulario(producto) : VALORES_INICIALES)
     const [errores, setErrores] = useState({})
     const [errorGuardado, setErrorGuardado] = useState('')
-    const [categorias] = useState(obtenerCategorias)
-
-    if (esEdicion && !producto) {
-        return (
-            <div>
-                <div className="alert alert-warning">No existe un producto con id {id}.</div>
-                <Link to="/admin/productos" className="btn btn-outline-secondary">Volver al listado</Link>
-            </div>
-        )
-    }
-
+    const [guardando, setGuardando] = useState(false)
 
     const cambiar = (e) => {
         const { name, value } = e.target
@@ -111,13 +99,12 @@ function ProductoFormulario() {
     }
 
 
-    const enviar = (e) => {
+    const enviar = async (e) => {
         e.preventDefault()
         setErrorGuardado('')
 
-        const erroresEncontrados = validar(datos, id)
+        const erroresEncontrados = validar(datos)
         setErrores(erroresEncontrados)
-
         
         if (Object.keys(erroresEncontrados).length > 0) return
 
@@ -131,18 +118,28 @@ function ProductoFormulario() {
             stockCritico: Number(datos.stockCritico),
             descripcion: datos.descripcion.trim(),
             tallas: TALLAS,
-            colores: datos.colores.map((clave) => color(datos.genero, datos.tipo, COLORES[clave], clave))
+            colores: datos.colores,
+            activo: datos.activo,
         }
 
+        setGuardando(true)
         try {
             if (esEdicion) {
-                actualizarProducto(id, campos)
+                await actualizarProducto(id, campos)
             } else {
-                crearProducto(campos)
+                await crearProducto(campos)
             }
             navegar('/admin/productos')
         } catch (err) {
-            setErrorGuardado(err.message)
+            if (err.status === 400 && err.datos?.detalles) {
+                setErrores(err.datos.detalles)
+                setErrorGuardado('Revisa los campos marcados')
+            } else if (err.status === 409 && err.message.startsWith('Ya existe')) {
+                setErrores({ tipo: 'Ya existe un producto de este género y tipo. Edítalo para cambiar sus colores.' })
+            } else {
+                setErrorGuardado(err.message)
+            }
+            setGuardando(false)
         }
     }
 
@@ -221,14 +218,53 @@ function ProductoFormulario() {
 
                 <Campo etiqueta="Descripción" nombre="descripcion" maxLength={300} as="textarea" rows={3} valor={datos.descripcion} error={errores.descripcion} onChange={cambiar} />
 
+                <div className="form-check mb-3">
+                    <input
+                        type="checkbox"
+                        id="activo"
+                        className="form-check-input"
+                        checked={datos.activo}
+                        onChange={(e) => setDatos((anterior) => ({ ...anterior, activo: e.target.checked }))}
+                    />
+                    <label htmlFor="activo" className="form-check-label">Visible en la tienda</label>
+                </div>
+
                 <div className="d-flex gap-2">
-                    <button type="submit" className="btn btn-primary">
+                    <button type="submit" className="btn btn-primary" disabled={guardando}>
                         {esEdicion ? 'Guardar cambios' : 'Guardar'}
                     </button>
                     <Link to="/admin/productos" className="btn btn-outline-secondary">Cancelar</Link>
                 </div>
             </form>
         </div>
+    )
+}
+
+const cargarProducto = (id) => (id === null ? Promise.resolve(null) : obtenerProductoPorId(id))
+
+function ProductoFormulario() {
+    const { id } = useParams()
+    const producto = useRecurso(cargarProducto, id ?? null)
+    const categorias = useRecurso(obtenerCategorias)
+
+    if (producto.cargando || categorias.cargando) return <p role="status">Cargando formulario...</p>
+
+    if (id !== undefined && !producto.datos) {
+        return (
+            <div>
+                <div role="alert" className="alert alert-warning">
+                    {producto.error === 'Producto no encontrado' ? `No existe un producto con id ${id}.` : producto.error}
+                </div>
+                <Link to="/admin/productos" className="btn btn-outline-secondary">Volver al listado</Link>
+            </div>
+        )
+    }
+
+    return (
+        <>
+            {categorias.error && <div role="alert" className="alert alert-danger">{categorias.error}</div>}
+            <Formulario key={id ?? 'nuevo'} id={id} producto={producto.datos} categorias={categorias.datos ?? []} />
+        </>
     )
 }
 
