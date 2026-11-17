@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCarrito } from '../../context/CarritoContext'
 import { useAuth } from '../../hooks/useAuth'
-import { crearOrden } from '../../data/ordenes'
-import { StockInsuficienteError } from '../../data/productos'
+import { crearOrden } from '../../services/ordenService'
 import RegionComunaSelect from '../../components/RegionComunaSelect'
 import EncabezadoPagina from '../../components/EncabezadoPagina'
 
@@ -31,6 +30,7 @@ function Checkout() {
 
     const [errores, setErrores] = useState({})
     const [errorCompra, setErrorCompra] = useState('')
+    const [enviando, setEnviando] = useState(false)
 
     if (carrito.length === 0) {
         return (
@@ -66,10 +66,11 @@ function Checkout() {
         return Object.keys(nuevosErrores).length === 0
     }
 
-    const finalizar = (e) => {
+    const finalizar = async (e) => {
         e.preventDefault()
-        if (!validar()) return
+        if (enviando || !validar()) return
         setErrorCompra('')
+        setEnviando(true)
 
         try {
             const [nombre, ...apellidos] = datos.nombre.trim().split(/\s+/)
@@ -77,16 +78,12 @@ function Checkout() {
 
             const items = carrito.map((item) => ({
                 productoId: item.id,
-                nombre: item.nombre,
-                precio: item.precio,
                 cantidad: item.cantidad,
                 talla: item.talla,
-                color: item.color?.nombre,
-                imagen: item.imagen,
+                color: item.color?.clave,
             }))
 
-            const orden = crearOrden({
-                usuarioId: usuario?.id || null,
+            const orden = await crearOrden({
                 cliente: { nombre, apellidos: apellidos.join(' '), correo: datos.correo.trim() },
                 entrega: {
                     calle: domicilio ? datos.direccion.trim() : 'Retiro en tienda',
@@ -96,13 +93,15 @@ function Checkout() {
                     indicaciones: datos.notas.trim(),
                 },
                 items,
-                estado: 'Pendiente',
-            }, { reservarStock: true })
+            })
             vaciarCarrito()
             navigate(`/compra/exitosa/${orden.id}`)
         } catch (error) {
-            if (error instanceof StockInsuficienteError) {
-                setErrorCompra(error.message)
+            // 400 datos inválidos - 404 producto que ya no existe - 409 sin stock
+            if ([400, 404, 409].includes(error.status)) {
+                const detalle = error.datos?.detalles ? Object.values(error.datos.detalles)[0] : null
+                setErrorCompra(detalle ?? error.message)
+                setEnviando(false)
                 return
             }
             navigate('/compra/error/0')
@@ -200,8 +199,8 @@ function Checkout() {
                             </div>
                         </div>
 
-                        <button type="submit" className="btn btn-primary btn-lg w-100">
-                            Confirmar compra
+                        <button type="submit" className="btn btn-primary btn-lg w-100" disabled={enviando}>
+                            {enviando ? 'Procesando...' : 'Confirmar compra'}
                         </button>
                     </form>
                 </div>
