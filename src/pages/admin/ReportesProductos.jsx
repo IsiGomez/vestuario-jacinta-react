@@ -1,22 +1,25 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { obtenerProductos } from '../../data/productos'
-import { obtenerCategorias } from '../../data/categorias'
+import { obtenerProductos, obtenerProductosCriticos } from '../../services/productoService'
+import { obtenerCategorias } from '../../services/categoriaService'
+import { useRecurso } from '../../hooks/useRecurso'
 import { resumenInventario, inventarioPorCategoria } from '../../utils/reportes'
 import { formatearPrecio } from '../../utils/formato'
 import TarjetaResumen from '../../components/TarjetaResumen'
 
 function ReportesProductos() {
-    const [reporte] = useState(() => {
-        const productos = obtenerProductos()
+    const { datos: productos, cargando, error } = useRecurso(obtenerProductos)
+    const { datos: categorias } = useRecurso(obtenerCategorias)
+    const { datos: criticos } = useRecurso(obtenerProductosCriticos)
+
+    const { resumen, porCategoria } = useMemo(() => {
+        const activos = (productos ?? []).filter((p) => p.activo)
 
         return {
-            resumen: resumenInventario(productos),
-            porCategoria: inventarioPorCategoria(productos, obtenerCategorias()),
+            resumen: { ...resumenInventario(activos), criticos: criticos?.length ?? 0 },
+            porCategoria: inventarioPorCategoria(activos, categorias ?? []),
         }
-    })
-
-    const { resumen, porCategoria } = reporte
+    }, [productos, categorias, criticos])
 
     return (
         <div className="pagina">
@@ -33,6 +36,9 @@ function ReportesProductos() {
                     </Link>
                 </div>
             </div>
+
+            {error && <div role="alert" className="alert alert-danger">{error}</div>}
+            {cargando && <p role="status">Cargando reporte...</p>}
 
             <div className="row g-3 mb-4">
                 <div className="col-12 col-sm-6 col-lg-3">
@@ -72,7 +78,7 @@ function ReportesProductos() {
                             </tr>
                         ))}
 
-                        {porCategoria.length === 0 && (
+                        {!cargando && !error && porCategoria.length === 0 && (
                             <tr>
                                 <td colSpan={4} className="text-center text-muted py-4">
                                     No hay productos registrados.
