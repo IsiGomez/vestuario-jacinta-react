@@ -13,6 +13,12 @@ Basado en el caso **"Vestuarios Jacinta"**: una tienda chilena de ropa casual y 
 
 ---
 
+## Manual de usuario
+
+Consulta el manual de usuario para conocer cómo utilizar la aplicación: [Clic aqui](MANUAL.md)
+
+---
+
 ## Links
 
 - Página de Vestuario Jacinta (React): <a href="https://isigomez.github.io/vestuario-jacinta-react/">Clic aqui</a>
