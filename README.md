@@ -1,8 +1,8 @@
 # Vestuario Jacinta · React
 
-Tienda online de ropa desarrollada como parte de la **Evaluación Parcial 2 (30%)** de la asignatura **DSY1104 – Desarrollo Fullstack II** (DuocUC).
+Tienda online de ropa desarrollada para la asignatura **DSY1104 – Desarrollo Fullstack II** (DuocUC). Esta versión corresponde a la **Evaluación Parcial 3 (40%)**: el frontend React integrado con el backend Spring Boot, la base de datos y la autenticación JWT.
 
-Basado en el caso **"Vestuarios Jacinta"**: una tienda chilena de ropa casual y urbana para toda la familia que busca renovar su sistema de ventas online. Esta versión es la migración a **React** de la plantilla HTML/CSS/JS entregada en la Evaluación Parcial 1.
+Basado en el caso **"Vestuarios Jacinta"**: una tienda chilena de ropa casual y urbana para toda la familia que busca renovar su sistema de ventas online. El proyecto parte de la migración a **React** (Evaluación Parcial 2) de la plantilla HTML/CSS/JS entregada en la Evaluación Parcial 1.
 
 ---
 
@@ -16,17 +16,28 @@ Basado en el caso **"Vestuarios Jacinta"**: una tienda chilena de ropa casual y 
 ## Links
 
 - Página de Vestuario Jacinta (React): <a href="https://isigomez.github.io/vestuario-jacinta-react/">Clic aqui</a>
+- Repositorio del backend (Spring Boot): <a href="https://github.com/IsiGomez/vestuario-jacinta-backend">Clic aqui</a>
 - Versión anterior en HTML (Evaluación Parcial 1): <a href="https://isigomez.github.io/vestuario-jacinta/">Clic aqui</a>
 
 ---
 
 ## Descripción
 
-El proyecto corresponde al **frontend** de la tienda Jacinta de vestuario, desarrollado con **React** y **Bootstrap**. Autenticación, usuarios y categorías están conectados al backend Spring Boot. Productos, carrito, órdenes y reportes todavía usan datos locales en `localStorage`.
- 
-Incluye la **tienda pública** (home, catálogo, categorías, carrito, checkout, blog, registro e inicio de sesión) y un **panel de administración** completo (productos, categorías, usuarios, órdenes, reportes).
+El proyecto corresponde al **frontend** de la tienda Jacinta de vestuario, desarrollado con **React** y **Bootstrap**. Toda la información de negocio viene del backend Spring Boot a través de la API REST (`fetch`): autenticación, usuarios, categorías, productos, órdenes y los datos de los reportes.
 
-> **Estado actual:** autenticación JWT, usuarios, perfil y categorías integrados con la API. El flujo de compra y la gestión de productos y ventas siguen pendientes de integración con el backend.
+Incluye la **tienda pública** (home, catálogo, categorías, carrito, checkout, blog, registro e inicio de sesión) y un **panel de administración** (productos, categorías, usuarios, órdenes, reportes) con acceso según el rol de la cuenta.
+
+> **Estado actual:** frontend integrado con el backend en autenticación JWT, usuarios, perfil, categorías, productos y órdenes. Solo se guardan en el navegador (`localStorage`) los tokens de sesión y el carrito. El contenido del blog es estático.
+
+### Roles
+
+| Rol | Acceso |
+| :--- | :--- |
+| **Administrador** | Acceso total: productos, categorías, usuarios, órdenes, reportes y dashboard |
+| **Vendedor** | Panel con productos, órdenes y reportes de productos (sin usuarios, dashboard ni reportes de ventas) |
+| **Cliente** | Tienda y perfil propio |
+
+Las rutas del panel se protegen con `RutaProtegida` según el rol, y el backend vuelve a validar cada petición con el token.
 
 ## Tecnologías utilizadas
 
@@ -54,6 +65,18 @@ npm run dev
 
 La aplicación queda disponible en `http://localhost:5173`. Iniciar también el backend y configurar `VITE_API_URL=http://localhost:8080/api` en `.env`. Reiniciar Vite si cambia esa URL.
 
+> **Importante:** Vite copia `VITE_API_URL` dentro del código **al compilar**. Sin esa variable la tienda muestra el aviso `Falta configurar VITE_API_URL`. Si la cambias, hay que volver a compilar o publicar.
+
+### Despliegue en GitHub Pages
+
+El workflow `.github/workflows/main.yml` se ejecuta con cada push a `main` (o manualmente desde **Actions → Deploy a GitHub Pages → Run workflow**). Ejecuta las pruebas, compila y publica `dist/`.
+
+1. En el repositorio ve a **Settings → Secrets and variables → Actions → Variables**.
+2. Crea la variable de repositorio `VITE_API_URL` con la URL del backend, terminada en `/api` y sin barra final.
+3. Vuelve a ejecutar el workflow. Si la variable falta, el build falla con un mensaje claro en lugar de publicar una página rota.
+
+El backend debe permitir el origen `https://isigomez.github.io` en CORS (ver el README del backend).
+
 | Comando | Descripción |
 | :--- | :--- |
 | `npm run dev` | Servidor de desarrollo |
@@ -68,10 +91,12 @@ La aplicación queda disponible en `http://localhost:5173`. Iniciar también el 
 | Correo | Contraseña | Tipo |
 | :--- | :--- | :--- |
 | `admin@duoc.cl` | `1234` | Administrador |
+| `vendedor@duoc.cl` | `1234` | Vendedor |
+| `cliente@duoc.cl` | `1234` | Cliente |
 
-Esta cuenta viene del SQL inicial de MySQL; el backend no crea ni restablece cuentas al arrancar. Las contraseñas nuevas deben tener entre 8 y 24 caracteres.
+Estas cuentas vienen del SQL inicial del backend; este no crea ni restablece cuentas al arrancar. Las contraseñas nuevas deben tener entre 8 y 24 caracteres. Los registros desde `/registro` siempre son de tipo Cliente.
 
-Inicia sesión en `/login` y entra al panel desde **Panel admin** en la barra de navegación (o en `/admin`).
+Inicia sesión en `/login` y entra al panel desde **Panel admin** en la barra de navegación (o en `/admin`). Vendedores y administradores ven esa opción; los clientes no.
 
 ## Estructura del proyecto
  
@@ -84,7 +109,7 @@ vestuario-jacinta-react/
     ├── main.jsx / App.jsx
     ├── components/          # EncabezadoPagina, TarjetaProducto, Campo, InputRun, RegionComunaSelect, TarjetaResumen, MiniaturaImagen, Footer…
     ├── context/             # AuthProvider (sesión) y CarritoContext (carrito)
-    ├── services/            # Cliente API, autenticación, usuarios y categorías
+    ├── services/            # Cliente API (fetch + renovación de token) y servicios de auth, usuarios, categorías, productos y órdenes
     ├── hooks/               # useAuth, useRecurso
     ├── layouts/             # TiendaLayout y AdminLayout
     ├── routes/              # Router, rutas de tienda y admin, RutaProtegida
@@ -92,7 +117,7 @@ vestuario-jacinta-react/
     │   ├── admin/           # Dashboard, productos, categorías, usuarios, órdenes, reportes, perfil
     │   ├── tienda/          # Vistas públicas: inicio, productos, categorías, carrito, checkout, blog, contacto…
     │   └── pruebas/         # Páginas auxiliares de desarrollo
-    ├── data/                # Datos locales: productos, categorías del catálogo local, órdenes, blogs, regiones/comunas
+    ├── data/                # Datos estáticos: blogs y regiones/comunas
     ├── utils/               # validaciones, formato, reportes y storage
     ├── styles/              # base, layouts, components, pages
     └── test/                # setup y pruebas unitarias
@@ -111,7 +136,7 @@ vestuario-jacinta-react/
 
 **Panel de administración (`/admin`, acceso según rol)**
 
-El administrador gestiona usuarios y categorías; el vendedor consulta categorías y accede a las rutas de productos y ventas. Los permisos de productos y ventas siguen pendientes de integración por B.
+Todo el panel consume la API. El administrador gestiona usuarios, categorías, productos y órdenes; el vendedor trabaja con productos y órdenes.
 - Dashboard con ventas totales, órdenes por estado, gráfico de los últimos 6 meses, productos críticos y más vendidos
 - CRUD de **productos** con colores, imágenes, stock y stock crítico; listado de productos críticos
 - CRUD de **categorías** (no permite eliminar una categoría con productos asociados)
@@ -123,10 +148,11 @@ El administrador gestiona usuarios y categorías; el vendedor consulta categorí
 **Transversal**
 - Inicio de sesión mediante JWT, restauración y renovación de sesión, contraseñas hasheadas con BCrypt en el backend y rutas protegidas por rol
 - Formularios con validación por campo: RUN chileno (dígito verificador), nombre, apellidos, correo, teléfono, contraseña, fecha de nacimiento, dirección y selección en cascada Región → Comuna
-- Usuarios y categorías persistidos en H2; tokens en `localStorage` (`jacinta_access_token` y `jacinta_refresh_token`). Productos, órdenes, blogs, categorías del catálogo local y carrito mantienen sus claves locales.
+- Datos persistidos en la base de datos del backend (usuarios, categorías, productos y órdenes). En el navegador solo quedan los tokens en `localStorage` (`jacinta_access_token` y `jacinta_refresh_token`) y el carrito (`jacinta_carrito_<id>` o `jacinta_carrito_guest`).
+- Compra integrada: el checkout envía `productoId`, cantidad, talla y color; el precio, el usuario y el estado los decide el servidor, que además valida el stock.
 - Diseño responsivo con Bootstrap (menú colapsable, tablas con scroll horizontal, grillas)
 
-Se usa **Vitest** con **React Testing Library** (`describe`, `it`, `expect`). Son **35 archivos de prueba y 317 pruebas** que cubren utilidades, capa de datos, componentes y páginas del panel de administración. La configuración está en `vitest.config.js` y `src/test/setup.js`, que limpia `localStorage`, desmonta los componentes y restaura los mocks entre pruebas.
+Se usa **Vitest** con **React Testing Library** (`describe`, `it`, `expect`). Son **36 archivos de prueba y 297 pruebas** que cubren utilidades, servicios de la API, componentes y páginas del panel de administración. Los servicios se prueban con `fetch` simulado, sin necesidad de levantar el backend. La configuración está en `vitest.config.js` y `src/test/setup.js`, que limpia `localStorage`, desmonta los componentes y restaura los mocks entre pruebas.
  
 ```bash
 npx vitest run
@@ -135,11 +161,11 @@ npx vitest run --coverage
  
 | Carpeta | Archivos | Pruebas | Qué verifica |
 | :--- | :---: | :---: | :--- |
-| `src/test/utils/` | 5 | 93 | Validaciones, formato, reportes, storage, roles y permisos |
-| `src/test/data/` | 4 | 69 | CRUD local de productos, categorías, órdenes y regiones/comunas |
-| `src/test/components/` | 5 | 25 | InputRun, MiniaturaImagen, RegionComunaSelect y TarjetaResumen |
-| `src/test/pages/admin/` | 14 | 95 | Dashboard, CRUD asíncrono, órdenes, boletas, reportes y perfil |
-| `src/test/services/` | 3 | 8 | Cliente API, renovación de tokens y servicio de usuarios |
+| `src/test/utils/` | 7 | 122 | Catálogo, estados de orden, formato, permisos por rol, reportes, storage y validaciones |
+| `src/test/data/` | 1 | 9 | Regiones y comunas |
+| `src/test/components/` | 5 | 25 | Campo, InputRun, MiniaturaImagen, RegionComunaSelect y TarjetaResumen |
+| `src/test/pages/admin/` | 14 | 113 | Dashboard, CRUD asíncrono, órdenes, boletas, reportes y perfil |
+| `src/test/services/` | 5 | 19 | Cliente API, renovación de tokens y servicios de productos, órdenes y usuarios |
 | `src/test/hooks/` | 1 | 1 | Permisos expuestos por useAuth |
 | `src/test/context/` | 1 | 3 | Restauración y cierre de sesión |
 | `src/test/routes/` | 2 | 5 | Rutas protegidas y menú por rol |
